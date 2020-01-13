@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-6 m-auto">
+    <div class="reg-title">
+      <h2>Create an account</h2>
+      <hr>
+    </div>
+    <form id="form" [formGroup]="registrationForm" (ngSubmit) = "onSubmit()">
+      <!-- list of fields for registration -->
+      <div *ngFor="let field of fieldList">
+        <div *ngIf="field.type=='string'" class="form-label-group">
+            <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
+            <input *ngIf="!field.email && !field.password" class="form-control" [formControlName]="field.id" [id]="field.id" type="text">
+            <input *ngIf="field.email" class="form-control" [formControlName]="field.id" [id]="field.id" type="email">
+            <input *ngIf="field.password" class="form-control" [formControlName]="field.id" [id]="field.id" type="password">
+          </div>
+        <div *ngIf="field.type=='boolean'" class="form-group form-check">
+          <input class="form-check-input" [formControlName]="field.id" [id]="field.id" type="checkbox">
+          <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
+        </div>
+        <div *ngIf="field.type=='enum'" class="form-group">
+          <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
+          <select  [formControlName]="field.id" multiple class="form-control" [id]="field.id" aria-describedby="comboHelp">
+            <option *ngFor="let valkey of field.values | keyvalue">{{valkey.value}}</option>
+          </select>
+          <small id="comboHelp" class="form-text text-muted">Note: Please choose at least one.</small>
+        </div>
+      </div>
+
+      <button style="margin-top: 10px;" class="btn btn-dark" type="submit" form="form" [disabled]="!validateForm()">Confirm</button>
+    </form>
+  </div>
+</div>
+

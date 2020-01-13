@@ -1,0 +1,43 @@
+#Camunda
+camunda.bpm:
+  admin-user:
+    id: majak96
+    password: majak96
+    firstName: Marijana
+    lastName: Kološnjaji
+    email: majak96@gmail.com
+    
+  filter:
+    create: All tasks
+
+#Spring DataSource
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/upp-project 
+    username: postgres
+    password: root
+    initialization-mode: always  
+    sql-script-encoding: UTF-8
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: timisaprojekat@gmail.com
+    password: isaprojekat.22
+    properties:
+      mail:
+        smtp: 
+          starttls:
+            enable: true
+        
+server:
+  port: 9997
+  
