@@ -4,6 +4,7 @@ export interface Field {
   type: string;
   required: boolean;
   email: boolean;
+  multiple: boolean;
   password: boolean;
   values: Map<string, string>;
 }

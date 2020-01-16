@@ -1,5 +1,5 @@
 import { Value } from './../model/value';
-import { RegistrationService } from './registration.service';
+import { RegistrationService } from '../services/registration.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -69,8 +69,6 @@ export class RegistrationComponent implements OnInit {
 
   // submits the registration data
   onSubmit() {
-    const scientificAreas: string[] = this.registrationForm.value['form_scientific_area'];
-
     const valuesList = new Array<Value>();
 
     this.fieldList.forEach(field => {
@@ -84,7 +82,11 @@ export class RegistrationComponent implements OnInit {
         this.router.navigateByUrl('');
       },
       error => {
-        alert(error.error);
+        if (error.status === 400) {
+          alert(error.error);
+        } else {
+          alert('An error occured! Please try again.');
+        }
       }
     );
 

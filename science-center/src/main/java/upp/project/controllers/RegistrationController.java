@@ -1,10 +1,12 @@
 package upp.project.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,10 +48,10 @@ public class RegistrationController {
 		System.out.println("Starting registration process.");
 		
 		//start registration process and get the first task
-		String firstTaskId = processService.startProcess("user_registration"); 
+		Task firstTask = processService.startProcess("user_registration"); 
 		
 		//get fields for the user task
-		List<FormFieldDTO> frontendFields = processService.getFrontendFields(firstTaskId);
+		List<FormFieldDTO> frontendFields = processService.getFrontendFields(firstTask.getId());
 		
 		//check for email and password fields
 		for(FormFieldDTO field : frontendFields) {
@@ -59,9 +61,12 @@ public class RegistrationController {
 			else if(field.getId().equals("form_password")) {
 				field.setPassword(true);
 			}
+			else if(field.getId().equals("form_scientific_area")) {
+				field.setMultiple(true);
+			}
 		}
 		
-		FormDTO form = new FormDTO(firstTaskId, frontendFields);
+		FormDTO form = new FormDTO(firstTask.getId(), firstTask.getProcessInstanceId(), firstTask.getName(), frontendFields);
 		
 		return ResponseEntity.ok(form);
 	}
@@ -71,8 +76,11 @@ public class RegistrationController {
 		
 		System.out.println("Submiting registration form field values.");
 		
+		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();	
+		String processInstanceId = task.getProcessInstanceId();
+		
 		//save form values as a process variable
-		processService.setProcessVariable(taskId, "newUserFormValues", formValues);
+		processService.setProcessVariable(processInstanceId, "newUserFormValues", formValues);
 		
 		//field validation and additional things
 		for(FormValueDTO formValue : formValues) {
@@ -86,7 +94,10 @@ public class RegistrationController {
 					return new ResponseEntity<>("Username " + formValue.getValue() + " is not available.", HttpStatus.BAD_REQUEST);
 				}
 			}
-			else if(formValue.getId().equals("form_scientific_area")) {				
+			else if(formValue.getId().equals("form_scientific_area")) {	
+				if(!validateScientificAreas(formValue.getValue())) {
+					return new ResponseEntity<>("You must choose at least one scientific area.", HttpStatus.BAD_REQUEST);
+				}
 				formValue.setValue(null);
 			}
 		}
@@ -103,13 +114,14 @@ public class RegistrationController {
 	}
 	
 	@GetMapping(value = "/confirm")
-	public ResponseEntity<?> confirmRegistration(@RequestParam String username) {
+	public ResponseEntity<?> confirmRegistration(@RequestParam String username, @RequestParam String processInstanceId) {
 		
-		System.out.println("Confirming email addres for " + username);
+		System.out.println("Confirming registration for " + username);
 		
 		RegisteredUser user = userService.findByUsername(username);
 		
-		//redirecting to an error page
+		//if user doesn't exist or has already confirmed his registration
+		//redirecting to the error page
 		if(user == null || user.isConfirmed()) {
 			HttpHeaders headersRedirect = new HttpHeaders();
 			headersRedirect.add("Location", "http://localhost:4200/emailconfirmationerror");
@@ -118,10 +130,28 @@ public class RegistrationController {
 			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
 		}
 		
+		//save username as a process variable
+		processService.setProcessVariable(processInstanceId, "registrationUsername", username);
 		
-		user.setConfirmed(true);	
-		userService.save(user);
+		//get the next task - for email confirmation
+		String taskId = processService.getNextTaskId(processInstanceId);
 		
+		List<FormValueDTO> formValues= new ArrayList<FormValueDTO>();
+		formValues.add(new FormValueDTO("email_confirm", "true"));
+		
+		//submits the user task for email confirmation
+		try {
+			processService.submitFormFields(taskId, formValues);
+		}
+		catch(Exception e) {
+			//redirecting to the error page
+			HttpHeaders headersRedirect = new HttpHeaders();
+			headersRedirect.add("Location", "http://localhost:4200/emailconfirmationerror");
+			headersRedirect.add("Access-Control-Allow-Origin", "*");
+			
+			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
+		}
+			
 		//redirecting to a success page 
 		HttpHeaders headersRedirect = new HttpHeaders();
 		headersRedirect.add("Location", "http://localhost:4200/emailconfirmation");
@@ -149,6 +179,16 @@ public class RegistrationController {
 		RegisteredUser user = userService.findByEmail(email);
 				
 		if(user == null && matcher.matches()) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean validateScientificAreas(String scientificAreas) {		
+		String[] scientificAreasArray = scientificAreas.split(",");
+		
+		if(scientificAreasArray.length >= 1) {
 			return true;
 		}
 		

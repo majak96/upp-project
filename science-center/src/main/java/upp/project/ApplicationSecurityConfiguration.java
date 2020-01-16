@@ -55,8 +55,9 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
 			.antMatchers("/login").permitAll()
 			.antMatchers("/registration/**").permitAll()
 			.antMatchers("/user/login").permitAll()
+			.antMatchers("/magazine/**").hasRole("EDITOR")
 			.antMatchers("/user/**").authenticated()
-			.anyRequest().authenticated();
+			.anyRequest().permitAll();
 		
 	}
 	

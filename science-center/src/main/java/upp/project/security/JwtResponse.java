@@ -1,17 +1,21 @@
 package upp.project.security;
 
+import upp.project.model.Role;
+
 public class JwtResponse {
 
 	private String token;
 	private String username;
+	private Role role;
 	
 	public JwtResponse() {
 		
 	}
 	
-	public JwtResponse(String username, String token) {
+	public JwtResponse(String username, String token, Role role) {
 		this.token = token;
 		this.username = username;
+		this.role = role;
 	}
 
 	public String getToken() {
@@ -28,6 +32,14 @@ public class JwtResponse {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 }

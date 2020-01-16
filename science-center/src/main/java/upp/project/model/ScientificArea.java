@@ -11,10 +11,10 @@ public class ScientificArea {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	public Long id;
+	private Long id;
 
 	@Column
-	public String name;
+	private String name;
 	
 	public ScientificArea() {
 	

@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import upp.project.model.RegisteredUser;
+import upp.project.model.Role;
 
 public class UserPrincipal implements UserDetails {
 	
@@ -32,6 +33,10 @@ public class UserPrincipal implements UserDetails {
 	public String getUsername() {
 
 		return user.getUsername();
+	}
+	
+	public Role getRole() {
+		return user.getAuthority().getRole();
 	}
 
 	@Override

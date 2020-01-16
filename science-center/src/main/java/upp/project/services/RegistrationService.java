@@ -35,8 +35,13 @@ public class RegistrationService implements JavaDelegate{
 	@Autowired
     private JavaMailSender javaMailSender;
 	
+	@Autowired
+	private ProcessService processService;
+	
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
+		
+		System.out.println("Registration service.");
 						
 		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("newUserFormValues");
 		
@@ -45,7 +50,8 @@ public class RegistrationService implements JavaDelegate{
 		userService.save(newUser);		
 		
 		//send email for account confirmation
-		sendConfirmationEmail(newUser);
+		sendConfirmationEmail(newUser, execution.getProcessInstance().getId());
+		
 	}
 	
 	private RegisteredUser createUser(List<FormValueDTO> formValues) {
@@ -59,13 +65,8 @@ public class RegistrationService implements JavaDelegate{
 		RegisteredUser user = new RegisteredUser(valuesMap.get("form_first_name"), valuesMap.get("form_last_name"), valuesMap.get("form_city"), valuesMap.get("form_country"), 
 				valuesMap.get("form_title"), valuesMap.get("form_email"), valuesMap.get("form_username"), passwordEncoder.encode(valuesMap.get("form_password")));
 		
-		//set user type
-		if(Boolean.parseBoolean(valuesMap.get("form_reviewer"))) {
-			user.setAuthority(authorityService.findByRole(Role.ROLE_REVIEWER));
-		}
-		else {
-			user.setAuthority(authorityService.findByRole(Role.ROLE_USER));
-		}
+		//set user type - all users are regular users in the beginning
+		user.setAuthority(authorityService.findByRole(Role.ROLE_USER));
 		
 		//set chosen scientific areas
 		String [] areas = valuesMap.get("form_scientific_area").split(",");
@@ -77,13 +78,16 @@ public class RegistrationService implements JavaDelegate{
 		return user;
 	}
 	
-	private void sendConfirmationEmail(RegisteredUser user) {
+	private void sendConfirmationEmail(RegisteredUser user, String processInstanceId) {
 		
-		String confirmationLink = "http://localhost:9997/registration/confirm";
+		String confirmationLinkBase = "http://localhost:9997/registration/confirm";		
+		String confirmationLink = confirmationLinkBase + "?username=" + user.getUsername() + "&processInstanceId=" + processInstanceId;
 		
-		String messageText = "<div style=\"text-center\"><h2>"
-						   + "<a href=\"" + confirmationLink + "?username=" + user.getUsername() + "\">Click here to confirm your account</a>"
-						   + "</h2></div>";
+		String messageText = "<div style=\"text-center\">"
+						   + "<h2>"
+						   + "<a href=\"" + confirmationLink + "\">Click here to confirm your account</a>"
+						   + "</h2>"
+						   + "</div>";
 		
         MimeMessage mail = javaMailSender.createMimeMessage();
 

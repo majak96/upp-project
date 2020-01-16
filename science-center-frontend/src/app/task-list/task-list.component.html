@@ -1,0 +1,16 @@
+<div style="margin-top: 70px; margin-bottom: 10px;" class="container">
+  <div class="row">
+    <div class="col-12 m-auto">
+      <div class="reg-title">
+        <h2>Task list</h2>
+        <hr>
+        <h4 *ngIf="tasks.length===0">There are no tasks available for you at the moment.</h4>
+        <div *ngIf="tasks.length!==0" class="card" >
+          <ul class="list-group list-group-flush">
+          <li *ngFor="let task of tasks; index as i" class="list-group-item">{{i+1}}. <a routerLink="/task/{{task.id}}" >{{task.title}}</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

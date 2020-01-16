@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import upp.project.dtos.FormFieldDTO;
 import upp.project.dtos.FormValueDTO;
+import upp.project.dtos.TaskDTO;
 
 @Service
 public class ProcessService {
@@ -38,14 +39,28 @@ public class ProcessService {
 	}
 	
 	/**
-	 * Starts the process and returns the id of the first task of the process
+	 * Starts the process and returns the first task of the process
 	 */
-	public String startProcess(String processId) {
+	public Task startProcess(String processId) {
 		
 		ProcessInstance process = runtimeService.startProcessInstanceByKey(processId);
 		Task firstTask = taskService.createTaskQuery().processInstanceId(process.getId()).list().get(0);
+		
+		return firstTask;
+	}
+	
+	/**
+	 * Gets the next available task for the process
+	 */
+	public String getNextTaskId(String processInstanceId) {
 
-		return firstTask.getId();
+		Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+		
+		if(task != null) {
+			return task.getId();
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -63,12 +78,14 @@ public class ProcessService {
 		for(FormField field : formFields) {
 			FormFieldDTO frontendField = new FormFieldDTO(field.getId(), field.getLabel(), field.getTypeName());
 			
+			//check if the field is required
 			for(FormFieldValidationConstraint constraint : field.getValidationConstraints()) {
 				if(constraint.getName().equals("required")) {
 					frontendField.setRequired(true);
 				}
 			}
 			
+			//set enumeration values
 			if(field.getType().getName().equals("enum")) {
 				Map<String, String> valuesMap = (LinkedHashMap<String, String>) field.getType().getInformation("values");
 				
@@ -89,7 +106,6 @@ public class ProcessService {
 	public boolean submitFormFields(String taskId, List<FormValueDTO> formValues) throws Exception {
 				
 		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();	
-		String processInstanceId = task.getProcessInstanceId();
 		
 		HashMap<String, Object> valuesMap = mapListToDto(formValues);
 		
@@ -106,13 +122,32 @@ public class ProcessService {
 		return true;
 	}
 	
-	public void setProcessVariable(String taskId, String processVariableName, Object processVariableValue) {
-		
-		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();	
-		String processInstanceId = task.getProcessInstanceId();
-		
+	/**
+	 * Creates a new process variable
+	 */
+	public void setProcessVariable(String processInstanceId, String processVariableName, Object processVariableValue) {
+			
 		runtimeService.setVariable(processInstanceId, processVariableName, processVariableValue);
 	}
+	
+	/**
+	 * Gets all available tasks for the user with the username
+	 */
+	public List<TaskDTO> getTasksForUser(String username) {
+		
+		List<Task> tasks = taskService.createTaskQuery().taskAssignee(username).list();
+		
+		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
+		
+		for(Task task : tasks) {
+			TaskDTO taskDTO = new TaskDTO(task.getId(), task.getName());
+			
+			taskDTOs.add(taskDTO);
+		}
+		
+		return taskDTOs;
+ 	}
+	
 	
 	private HashMap<String, Object> mapListToDto(List<FormValueDTO> formValues) {
 		HashMap<String, Object> valuesMap = new HashMap<String,Object>();
@@ -123,4 +158,6 @@ public class ProcessService {
 		
 		return valuesMap;
 	}
+	
+	
 }

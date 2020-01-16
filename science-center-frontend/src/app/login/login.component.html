@@ -1,19 +1,21 @@
-<div class="row">
-  <div class="col-6 m-auto">
-    <div class="reg-title">
-      <h2>Login</h2>
-      <hr>
+<div style="margin-top: 80px; margin-bottom: 10px;" class="container">
+  <div class="row">
+    <div class="col-6 m-auto">
+      <div class="reg-title">
+        <h2>Login</h2>
+        <hr>
+      </div>
+      <form id="loginForm" [formGroup] = "loginForm" (ngSubmit) = "onSubmit()">
+        <div class="form-label-group">
+          <label for="inputUsername" class="form-control-label">Username</label>
+          <input type="text" id="inputUsername" class="form-control" placeholder="Username" formControlName="username">
+        </div>
+        <div class="form-label-group">
+          <label for="inputPassword" class="form-control-label">Password</label>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Password" formControlName="password">
+        </div>
+        <button style="margin-top: 10px;" class="btn btn-dark" type="submit" form="registrationForm" [disabled]="!loginForm.valid">Log in</button>
+      </form>
     </div>
-    <form id="loginForm" [formGroup] = "loginForm" (ngSubmit) = "onSubmit()">
-      <div class="form-label-group">
-        <label for="inputUsername" class="form-control-label">Username</label>
-        <input type="text" id="inputUsername" class="form-control" placeholder="Username" formControlName="username">
-      </div>
-      <div class="form-label-group">
-        <label for="inputPassword" class="form-control-label">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" formControlName="password">
-      </div>
-      <button style="margin-top: 10px;" class="btn btn-dark" type="submit" form="registrationForm" [disabled]="!loginForm.valid">Log in</button>
-    </form>
   </div>
 </div>

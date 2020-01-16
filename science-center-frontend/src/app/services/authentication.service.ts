@@ -1,4 +1,4 @@
-import { JwtResponse } from './../model/jwtresponse';
+import { JwtResponse } from '../model/jwtresponse';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';

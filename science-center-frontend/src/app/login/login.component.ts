@@ -1,8 +1,8 @@
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '../authentication/authetication-service.service';
 import { TokenStorageService } from '../authentication/token-storage.service';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -11,32 +11,40 @@ import { TokenStorageService } from '../authentication/token-storage.service';
 })
 export class LoginComponent implements OnInit {
 
-  loginForm: FormGroup;
+  loginForm: FormGroup = new FormGroup({
+    username: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required)
+  });
 
   constructor(private autheticationService: AuthenticationService,
               private tokenStorageService: TokenStorageService,
               private router: Router) { }
 
   ngOnInit() {
-    this.loginForm = new FormGroup({
-      username: new FormControl('', Validators.required),
-      password: new FormControl('', Validators.required)
-    });
+
   }
 
+  // submit form values and log in
   onSubmit() {
-    this.autheticationService.submitLoginForm(
-      {username: this.loginForm.value['username'], password: this.loginForm.value['password']}).subscribe(
+    const formValues = {username: this.loginForm.value['username'],
+                      password: this.loginForm.value['password']}
+
+    this.autheticationService.submitLoginForm(formValues).subscribe(
       data => {
         console.log('Successfully logged in.');
 
         this.tokenStorageService.saveToken(data.token);
         this.tokenStorageService.saveUsername(data.username);
+        this.tokenStorageService.saveRole(data.role);
 
         window.location.reload();
       },
       error => {
-        alert('Incorrect username or password!');
+        if (error.status === 401) {
+          alert('Incorrect username or password!');
+        } else {
+          alert('An error occured! Please try again.');
+        }
       }
     );
   }

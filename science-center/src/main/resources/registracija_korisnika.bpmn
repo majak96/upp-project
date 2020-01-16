@@ -90,22 +90,22 @@
       <bpmn:incoming>SequenceFlow_1mulamd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1yx1g48</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_191x6x5" name="Potvrda statusa recenzenta" camunda:assignee="administrator">
+    <bpmn:userTask id="Task_191x6x5" name="Potvrda statusa recenzenta" camunda:assignee="admin">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="reviewer_confirm" label="Potvrđujem da je korisnik recenzent" type="boolean" />
+          <camunda:formField id="reviewer_confirm" label="Potvrđujem da je korisnik ${registrationUsername} recenzent" type="boolean" />
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1t6cjrz</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15628v8</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_02rsvnh" sourceRef="Task_0t0d08r" targetRef="EndEvent_0xkjp90" />
-    <bpmn:serviceTask id="Task_0t0d08r" name="Čuvanje potvrde statusa recenzenta" camunda:expression="${reviewer_confirm == true}" camunda:resultVariable="form_reviewer">
+    <bpmn:serviceTask id="Task_0t0d08r" name="Čuvanje potvrde statusa recenzenta" camunda:class="upp.project.services.SaveReviewerRoleService">
       <bpmn:incoming>SequenceFlow_15628v8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_02rsvnh</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_12la6xz" sourceRef="Task_09wkpqn" targetRef="ExclusiveGateway_1gdsn70" />
-    <bpmn:serviceTask id="Task_09wkpqn" name="Čuvanje potvrde prijave" camunda:expression="${email_confirm == true}" camunda:resultVariable="confirmed_email">
+    <bpmn:serviceTask id="Task_09wkpqn" name="Čuvanje potvrde prijave" camunda:class="upp.project.services.EmailConfirmationService">
       <bpmn:incoming>SequenceFlow_1yx1g48</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12la6xz</bpmn:outgoing>
     </bpmn:serviceTask>

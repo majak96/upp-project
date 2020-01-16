@@ -15,6 +15,8 @@ public class FormFieldDTO {
 	
 	private Boolean email;
 	
+	private Boolean multiple;
+	
 	private Boolean password;
 	
 	private Map<String, String> values = new LinkedHashMap<String,String>();
@@ -22,6 +24,7 @@ public class FormFieldDTO {
 	public FormFieldDTO() {
 		this.email = false;
 		this.password = false;
+		this.multiple = false;
 	}
 
 	public FormFieldDTO(String id, String label, String type) {
@@ -30,6 +33,7 @@ public class FormFieldDTO {
 		this.type = type;
 		this.email = false;
 		this.password = false;
+		this.multiple = false;
 	}
 
 	public String getId() {
@@ -86,6 +90,14 @@ public class FormFieldDTO {
 
 	public void setPassword(Boolean password) {
 		this.password = password;
+	}
+
+	public Boolean getMultiple() {
+		return multiple;
+	}
+
+	public void setMultiple(Boolean multiple) {
+		this.multiple = multiple;
 	}
 
 }

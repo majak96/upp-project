@@ -12,6 +12,9 @@ import { EmailConfirmationErrorComponent } from './email-confirmation-error/emai
 import { NotFoundComponent } from './not-found/not-found.component';
 import { LoginComponent } from './login/login.component';
 import { AuthInterceptor } from './authentication/auth.interceptor';
+import { NewMagazineComponent } from './new-magazine/new-magazine.component';
+import { TaskListComponent } from './task-list/task-list.component';
+import { TaskComponent } from './task/task.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,9 @@ import { AuthInterceptor } from './authentication/auth.interceptor';
     EmailConfirmationErrorComponent,
     NotFoundComponent,
     LoginComponent,
+    NewMagazineComponent,
+    TaskListComponent,
+    TaskComponent,
   ],
   imports: [
     BrowserModule,

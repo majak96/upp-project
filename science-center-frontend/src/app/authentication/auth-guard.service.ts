@@ -1,23 +1,23 @@
 import { TokenStorageService } from './token-storage.service';
 import { Injectable } from '@angular/core';
-import { Router, CanActivate } from '@angular/router';
+import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthGuardService implements CanActivate {
+    constructor(
+        private router: Router,
+        private tokenStorageService: TokenStorageService
+    ) { }
 
+    canActivate(): boolean {
+      if (!!this.tokenStorageService.getToken()) {
 
-  constructor(public tokenStorageService: TokenStorageService,
-              public router: Router) { }
+        return true;
+      }
 
-
-  canActivate(): boolean {
-    if (this.tokenStorageService.getToken()) {
-
-      this.router.navigate(['login']);
+      this.router.navigate(['/login']);
 
       return false;
     }
-    return true;
-  }
 }

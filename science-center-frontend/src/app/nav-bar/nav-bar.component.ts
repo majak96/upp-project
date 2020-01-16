@@ -9,11 +9,13 @@ import { Component, OnInit } from '@angular/core';
 export class NavBarComponent implements OnInit {
 
   isLoggedIn: boolean;
+  role: string;
 
   constructor(private tokenStorageService: TokenStorageService) { }
 
   ngOnInit() {
     this.isLoggedIn = !!this.tokenStorageService.getToken();
+    this.role = this.tokenStorageService.getRole();
   }
 
   logOut() {

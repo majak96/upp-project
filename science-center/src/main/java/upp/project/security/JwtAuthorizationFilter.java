@@ -32,20 +32,20 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         
-    	// read the Authorization header, where the JWT token should be
+    	//read the authorization header, where the JWT token should be
         String header = request.getHeader(JwtProperties.HEADER_STRING);
 
-        // if header does not contain BEARER or is null delegate to Spring impl and exit
+        //if header does not contain BEARER or is null delegate to Spring impl and exit
         if (header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)) {
             chain.doFilter(request, response);
             return;
         }
 
-        // if header is present, try grab user principal from database and perform authorization
+        //if header is present, try grab user principal from database and perform authorization
         Authentication authentication = getUsernamePasswordAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Continue filter execution
+        //continue filter execution
         chain.doFilter(request, response);
     }
     
@@ -60,8 +60,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
                     .verify(token)
                     .getSubject();
 
-            // Search in the DB if we find the user by token subject (username)
-            // If so, then grab user details and create spring auth token using username, pass, authorities/roles
+            // search if we find the user by token subject (username)
             if (userName != null) {
                 RegisteredUser user = userRepository.findByUsername(userName);
                 UserPrincipal principal = new UserPrincipal(user);
