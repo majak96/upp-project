@@ -4,6 +4,8 @@ import { Field } from '../model/field';
 import { MagazineService } from '../services/magazine.service';
 import { Router } from '@angular/router';
 import { Value } from '../model/value';
+import { TaskService } from '../services/task.service';
+import { listLazyRoutes } from '@angular/compiler/src/aot/lazy_routes';
 
 @Component({
   selector: 'app-new-magazine',
@@ -15,28 +17,28 @@ export class NewMagazineComponent implements OnInit {
   magazineForm: FormGroup;
   fieldList: Field[];
   taskId: string;
+  nextTaskId: string;
   processId: string;
 
-  firstForm: boolean = true;
+  firstForm = true;
 
   constructor(private magazineService: MagazineService,
+              private taskService: TaskService,
               private router: Router) { }
 
   ngOnInit() {
-    this.initializeRegistrationForm();
+    this.initializeNewMagazineForm();
   }
 
   // sends a request to start the new magazine process
   // gets the list of fields for the form
-  initializeRegistrationForm()  {
+  initializeNewMagazineForm()  {
     this.magazineService.startNewMagazineProcess().subscribe(
       data => {
         console.log('Started the new magazine process.');
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
         this.processId = data.processId;
-
-        console.log(this.processId);
 
         this.magazineForm = this.createFormGroup(data.fieldList);
       },
@@ -48,10 +50,7 @@ export class NewMagazineComponent implements OnInit {
 
   // gets the list of fields for the form for editors and reviewers
   initializeUsersForm()  {
-
-    console.log(this.processId);
-
-    this.magazineService.getUserFields(this.processId).subscribe(
+    this.taskService.getTask(this.nextTaskId).subscribe(
       data => {
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
@@ -77,14 +76,14 @@ export class NewMagazineComponent implements OnInit {
         validators.push(Validators.required);
       }
 
-      group[field.id] = new FormControl('', validators);
+      if (field.type === 'enum' && !field.multiple) {
+        group[field.id] = new FormControl(Object.keys(field.values)[1], validators);
+      } else {
+        group[field.id] = new FormControl('', validators);
+      }
 
       if (field.type === 'boolean') {
         group[field.id].value = false;
-      }
-
-      if (field.type === 'enum' && field.multiple === false) {
-        console.log(field.values.entries);
       }
 
     });
@@ -92,7 +91,7 @@ export class NewMagazineComponent implements OnInit {
     return new FormGroup(group);
   }
 
-  // submits the data for a new magazine
+  // submits the data
   onSubmit() {
 
     const valuesList = new Array<Value>();
@@ -101,20 +100,26 @@ export class NewMagazineComponent implements OnInit {
       valuesList.push({id: field.id, value: this.magazineForm.value[field.id].toString()});
     });
 
-    console.log(valuesList);
-
+    // submits the data for a new magazine
     if (this.firstForm) {
       this.magazineService.submitMagazineForm(valuesList, this.taskId).subscribe(
         data => {
           alert('You have successfully added a new magazine!');
 
           this.firstForm = false;
+          this.nextTaskId = data.nextTask;
+
           this.initializeUsersForm();
         },
         error => {
-          alert(error.error);
+          if (error.status === 400) {
+            alert(error.error);
+          } else {
+            alert('An error occured! Please try again.');
+          }
         }
       );
+    // submits the data for the reviewers and editors
     } else {
       this.magazineService.submitUsersForm(valuesList, this.taskId).subscribe(
         data => {
@@ -123,7 +128,11 @@ export class NewMagazineComponent implements OnInit {
           this.router.navigateByUrl('');
         },
         error => {
-          alert(error.error);
+          if (error.status === 400) {
+            alert(error.error);
+          } else {
+            alert('An error occured! Please try again.');
+          }
         }
       );
     }
@@ -132,20 +141,24 @@ export class NewMagazineComponent implements OnInit {
 
     // validates form
     validateForm() {
-      if(this.firstForm) {
-        const scientificAreas: string[] = this.magazineForm.value['form_scientific_area'];
 
-        if (this.magazineForm.valid && scientificAreas.length >= 1) {
-          return true;
+      let result = true;
+
+      // check required enum fields
+      this.fieldList.forEach(field => {
+        let list: string[] = [];
+        if (field.minNumber != null && field.type === 'enum') {
+          list = this.magazineForm.value[field.id];
+
         }
-      } else {
-        const reviewers: string[] = this.magazineForm.value['form_reviewers'];
 
-        if (this.magazineForm.valid && reviewers.length >= 2) {
-          return true;
+        if (list.length < field.minNumber) {
+          result = false;
         }
-      }
+      });
 
-      return false;
+      // also check if the rest of the fields are valid
+      return result && this.magazineForm.valid;
     }
+
 }

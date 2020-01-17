@@ -41,7 +41,7 @@ public class RegistrationService implements JavaDelegate{
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Registration service.");
+		System.out.println("Saving registration and sending mail");
 						
 		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("newUserFormValues");
 		

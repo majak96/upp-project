@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import upp.project.dtos.FormDTO;
 import upp.project.dtos.FormFieldDTO;
 import upp.project.dtos.FormValueDTO;
+import upp.project.dtos.SubmitResponseDTO;
 import upp.project.model.RegisteredUser;
 import upp.project.services.ProcessService;
 import upp.project.services.UserService;
@@ -50,21 +51,10 @@ public class RegistrationController {
 		//start registration process and get the first task
 		Task firstTask = processService.startProcess("user_registration"); 
 		
+		processService.setProcessVariable(firstTask.getProcessInstanceId(), "process_initiator", "guest");
+		
 		//get fields for the user task
 		List<FormFieldDTO> frontendFields = processService.getFrontendFields(firstTask.getId());
-		
-		//check for email and password fields
-		for(FormFieldDTO field : frontendFields) {
-			if(field.getId().equals("form_email")) {
-				field.setEmail(true);
-			}
-			else if(field.getId().equals("form_password")) {
-				field.setPassword(true);
-			}
-			else if(field.getId().equals("form_scientific_area")) {
-				field.setMultiple(true);
-			}
-		}
 		
 		FormDTO form = new FormDTO(firstTask.getId(), firstTask.getProcessInstanceId(), firstTask.getName(), frontendFields);
 		
@@ -72,7 +62,7 @@ public class RegistrationController {
 	}
 	
 	@PostMapping("/{taskId}")
-	public ResponseEntity<?> register(@RequestBody List<FormValueDTO> formValues, @PathVariable String taskId) {
+	public ResponseEntity<?> submitRegistrationForm(@RequestBody List<FormValueDTO> formValues, @PathVariable String taskId) {
 		
 		System.out.println("Submiting registration form field values.");
 		
@@ -82,22 +72,8 @@ public class RegistrationController {
 		//save form values as a process variable
 		processService.setProcessVariable(processInstanceId, "newUserFormValues", formValues);
 		
-		//field validation and additional things
 		for(FormValueDTO formValue : formValues) {
-			if (formValue.getId().equals("form_email")) {				
-				if(!validateEmailAddress(formValue.getValue())) {
-					return new ResponseEntity<>("Email " + formValue.getValue() + " is invalid or already taken.", HttpStatus.BAD_REQUEST);
-				}	
-			}
-			else if(formValue.getId().equals("form_username")) {
-				if(!validateUsername(formValue.getValue())) {
-					return new ResponseEntity<>("Username " + formValue.getValue() + " is not available.", HttpStatus.BAD_REQUEST);
-				}
-			}
-			else if(formValue.getId().equals("form_scientific_area")) {	
-				if(!validateScientificAreas(formValue.getValue())) {
-					return new ResponseEntity<>("You must choose at least one scientific area.", HttpStatus.BAD_REQUEST);
-				}
+			if(formValue.getId().equals("form_scientific_area")) {	
 				formValue.setValue(null);
 			}
 		}
@@ -109,8 +85,17 @@ public class RegistrationController {
 		catch(Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-				
-		return new ResponseEntity<>(HttpStatus.OK);
+		
+		//find the next task
+		Task nextTask = taskService.createTaskQuery().processInstanceId(processInstanceId).taskPriority(1).singleResult();
+		
+		//return task id of the next task if it exists
+		if(nextTask != null) {
+			return ResponseEntity.ok(new SubmitResponseDTO(nextTask.getId()));
+		}
+		else {
+			return ResponseEntity.ok(new SubmitResponseDTO());
+		}
 	}
 	
 	@GetMapping(value = "/confirm")
@@ -158,41 +143,6 @@ public class RegistrationController {
 		headersRedirect.add("Access-Control-Allow-Origin", "*");
 		
 		return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
-	}
-	
-	private boolean validateUsername(String username) {		
-		RegisteredUser user = userService.findByUsername(username);
-		
-		if(user == null) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private boolean validateEmailAddress(String email) {
-		String regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
-		 
-		Pattern pattern = Pattern.compile(regex);	
-		Matcher matcher = pattern.matcher(email);
-		
-		RegisteredUser user = userService.findByEmail(email);
-				
-		if(user == null && matcher.matches()) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private boolean validateScientificAreas(String scientificAreas) {		
-		String[] scientificAreasArray = scientificAreas.split(",");
-		
-		if(scientificAreasArray.length >= 1) {
-			return true;
-		}
-		
-		return false;
 	}
 	
 }

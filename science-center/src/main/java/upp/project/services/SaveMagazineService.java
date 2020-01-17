@@ -29,12 +29,17 @@ public class SaveMagazineService implements JavaDelegate{
 
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
+		
+		System.out.println("Saving the magazine");
 						
 		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("newMagazineFormValues");
 		
 		//create and save a new magazine
 		Magazine newMagazine = createMagazine(formValues);			
 		magazineService.save(newMagazine);		
+		
+		//save magazine id as a process variable
+		execution.setVariable("magazineId", newMagazine.getId());
 		
 	}
 	
@@ -71,7 +76,7 @@ public class SaveMagazineService implements JavaDelegate{
 		if(loggedInUser != null && loggedInUser.getAuthority().getRole() == Role.ROLE_EDITOR) {
 			magazine.setEditorInChief(loggedInUser);
 		}
-				
+					
 		return magazine;
 	}
 

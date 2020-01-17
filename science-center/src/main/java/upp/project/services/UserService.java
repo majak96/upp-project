@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import upp.project.model.Authority;
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
+import upp.project.model.ScientificArea;
 import upp.project.repositories.AuthorityRepository;
 import upp.project.repositories.UserRepository;
 
@@ -40,5 +41,10 @@ public class UserService {
 		Authority authority = authorityRepository.findByRole(role);
 		
 		return userRepository.findByAuthority(authority);
+	}
+	
+	public List<RegisteredUser> findByScientificAreas(List<ScientificArea> scientificAreas, Role role) {
+		
+		return userRepository.findByScientificAreas(scientificAreas, role, true);
 	}
 }

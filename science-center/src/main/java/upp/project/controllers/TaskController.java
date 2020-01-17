@@ -25,8 +25,8 @@ import upp.project.services.ProcessService;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
-@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-public class UserController {
+@RequestMapping(value = "/task", produces = MediaType.APPLICATION_JSON_VALUE)
+public class TaskController {
 	
 	@Autowired
 	ProcessService processService;
@@ -34,7 +34,7 @@ public class UserController {
 	@Autowired
 	TaskService taskService;
 	
-	@GetMapping("/task")
+	@GetMapping("/")
 	public ResponseEntity<?> getUserTasks() {
 		
 		System.out.println("Getting a list of tasks.");
@@ -51,9 +51,7 @@ public class UserController {
 	public ResponseEntity<?> getTask(@PathVariable String taskId) {
 		
 		System.out.println("Getting a task.");
-		
-		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-		
+				
 		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 		
 		//check if task exists
@@ -61,9 +59,13 @@ public class UserController {
 			return new ResponseEntity<>("The task doesn't exist!", HttpStatus.NOT_FOUND);
 		}
 		
-		//check if task belongs to the signed in user
-		if(!username.equals(task.getAssignee())) {
-			return new ResponseEntity<>("You are not authorized to see this task!", HttpStatus.UNAUTHORIZED);
+		if(!task.getAssignee().equals("guest")) {
+			String username = SecurityContextHolder.getContext().getAuthentication().getName();
+			
+			//check if task belongs to the signed in user
+			if(!username.equals(task.getAssignee())) {
+				return new ResponseEntity<>("You are not authorized to see this task!", HttpStatus.UNAUTHORIZED);
+			}
 		}
 		
 		//get fields for the user task
@@ -74,7 +76,7 @@ public class UserController {
 		return ResponseEntity.ok(form);
 	}
 	
-	@PostMapping("/task/{taskId}")
+	@PostMapping("/{taskId}")
 	public ResponseEntity<?> submitTask(@RequestBody List<FormValueDTO> formValues, @PathVariable String taskId){
 		
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();

@@ -1,3 +1,4 @@
+import { SubmitResponse } from './../model/submitresponse';
 import { Form } from '../model/form';
 import { Value } from '../model/value';
 import { Injectable } from '@angular/core';
@@ -23,9 +24,9 @@ export class RegistrationService {
     return this.http.get<Form>(this.baseUrl, this.httpOptions);
   }
 
-  submitRegistrationForm(formValues: Value[], taskId: string) {
+  submitRegistrationForm(formValues: Value[], taskId: string): Observable<SubmitResponse> {
 
-    return this.http.post(this.baseUrl + taskId, formValues, this.httpOptions);
+    return this.http.post<SubmitResponse>(this.baseUrl + taskId, formValues, this.httpOptions);
   }
 }
 

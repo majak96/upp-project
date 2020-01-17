@@ -24,6 +24,7 @@ export class TaskComponent implements OnInit {
   id: string;
 
   ngOnInit() {
+    // get task id
     this.actrouter.paramMap.subscribe(
       params => {
         this.id = params.get('id');
@@ -36,7 +37,6 @@ export class TaskComponent implements OnInit {
   getTask() {
     this.taskService.getTask(this.id).subscribe(
       data => {
-        console.log(data.fieldList);
         this.fieldList = data.fieldList;
         this.taskId = data.taskId;
         this.taskName = data.taskName;
@@ -71,16 +71,19 @@ export class TaskComponent implements OnInit {
 
       if (field.type === 'boolean') {
         group[field.id].value = false;
-        console.log(field.label);
-      }
-
-      if (field.type === 'enum' && field.multiple === false) {
-        console.log(field.values.entries);
       }
 
     });
 
-    return new FormGroup(group);
+    const formgroup = new FormGroup(group);
+
+    fields.forEach(field => {
+      if (field.value !== null) {
+        formgroup.get(field.id).setValue(field.value);
+      }
+    });
+
+    return formgroup;
   }
 
   // submits the task
@@ -98,7 +101,11 @@ export class TaskComponent implements OnInit {
         this.router.navigateByUrl('/tasks');
       },
       error => {
-        alert(error.error);
+        if (error.status !== 500) {
+          alert(error.error);
+        } else {
+          alert('An error occured! Please try again.');
+        }
       }
     );
   }

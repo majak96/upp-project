@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import upp.project.dtos.FormDTO;
 import upp.project.dtos.FormFieldDTO;
 import upp.project.dtos.FormValueDTO;
+import upp.project.dtos.SubmitResponseDTO;
+import upp.project.model.Magazine;
+import upp.project.services.MagazineService;
 import upp.project.services.ProcessService;
 
 @RestController
@@ -34,43 +38,54 @@ public class MagazineController {
 	@Autowired
 	TaskService taskService;
 	
-	@GetMapping("/")
+	@Autowired
+	MagazineService magazineService;
+	
+	@GetMapping("")
+	public ResponseEntity<?> getActiveMagazines() {
+		
+		List<Magazine> activeMagazines = magazineService.getActiveMagazines();
+		
+		return ResponseEntity.ok(activeMagazines);
+	}
+	
+	@GetMapping("/form")
 	public ResponseEntity<?> startNewMagazineProcess() {
 		
 		System.out.println("Starting the process of creating a new magazine.");
 		
+		//get username of the logged in user
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		
 		//start the process and get the first task
 		Task firstTask = processService.startProcess("adding_new_magazine"); 
 		
+		processService.setProcessVariable(firstTask.getProcessInstanceId(), "process_initiator", username);
+		
 		//get fields for the user task
 		List<FormFieldDTO> frontendFields = processService.getFrontendFields(firstTask.getId());
-		
-		for(FormFieldDTO field : frontendFields) {
-			if(field.getId().equals("form_scientific_area")) {
-				field.setMultiple(true);
-			}
-		}
 		
 		FormDTO form = new FormDTO(firstTask.getId(), firstTask.getProcessInstanceId(), firstTask.getName(), frontendFields);
 		
 		return ResponseEntity.ok(form);
 	}
 	
-	@PostMapping("/{taskId}")
-	public ResponseEntity<?> create(@RequestBody List<FormValueDTO> formValues, @PathVariable String taskId) {
+	@PostMapping("/form/{taskId}")
+	public ResponseEntity<?> submitNewMagazineForm(@RequestBody List<FormValueDTO> formValues, @PathVariable String taskId) {
 		
 		System.out.println("Submiting the form field values for a new magazine.");
 		
-		String processId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
+		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();	
+		String processInstanceId = task.getProcessInstanceId();
 		
 		//save form values as a process variable
-		processService.setProcessVariable(processId, "newMagazineFormValues", formValues);
+		processService.setProcessVariable(processInstanceId, "newMagazineFormValues", formValues);
 		
 		//field validation and additional things
 		for(FormValueDTO formValue : formValues) {
 			if(formValue.getId().equals("form_issn")) {
 				if(!validateISSN(formValue.getValue())) {
-					return new ResponseEntity<>("ISSN must be an eight-digit number!", HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<>("ISSN must be a unique eight-digit number!", HttpStatus.BAD_REQUEST);
 				}
 			}
 			else if(formValue.getId().equals("form_scientific_area")) {	
@@ -88,37 +103,35 @@ public class MagazineController {
 		catch(Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
+		
+		//return the next task
+		Task nextTask = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
 				
-		return new ResponseEntity<>(HttpStatus.OK);
+		return ResponseEntity.ok(new SubmitResponseDTO(nextTask.getId()));
 	}
 	
-	@GetMapping("/{processInstanceId}")
-	public ResponseEntity<?> getUsersForm(@PathVariable String processInstanceId) {
-		
-		Task nextTask = taskService.createTaskQuery().processInstanceId(processInstanceId).taskDefinitionKey("Task_0l9bab8").singleResult();
-		
-		//get fields for the user task
-		List<FormFieldDTO> frontendFields = processService.getFrontendFields(nextTask.getId());
-		
-		for(FormFieldDTO field : frontendFields) {
-				field.setMultiple(true);
-		}
-		
-		FormDTO form = new FormDTO(nextTask.getId(), processInstanceId, nextTask.getName(), frontendFields);
-		
-		return ResponseEntity.ok(form);
-	}
-	
-	@PostMapping("/{magazineId}/{taskId}")
+	@PostMapping("/form/users/{taskId}")
 	public ResponseEntity<?> addUsers(@RequestBody List<FormValueDTO> formValues, @PathVariable String taskId) {
 		
-		System.out.println("Submiting the form field values for editors and reviewers.");
+		System.out.println("Submiting the form field values for magazine editors and reviewers.");
 		
-		String processId = taskService.createTaskQuery().taskId(taskId).singleResult().getProcessInstanceId();
-		processService.setProcessVariable(processId, "newMagazineUsersFormValues", formValues);
+		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();	
+		String processInstanceId = task.getProcessInstanceId();
 		
+		//save form values as a process variable
+		processService.setProcessVariable(processInstanceId, "newMagazineUsersFormValues", formValues);
+		
+		//field validation and additional things
 		for(FormValueDTO formValue : formValues) {
-			formValue.setValue(null);
+			if(formValue.getId().equals("form_reviewers")) {	
+				if(!validateReviewers(formValue.getValue())) {
+					return new ResponseEntity<>("You must choose at least two reviewers.", HttpStatus.BAD_REQUEST);
+				}
+				formValue.setValue(null);
+			}
+			else if(formValue.getId().equals("form_editors")) {	
+				formValue.setValue(null);
+			}
 		}
 		
 		//submit form fields
@@ -142,14 +155,25 @@ public class MagazineController {
 		return false;
 	}
 	
+	private boolean validateReviewers(String reviewers) {		
+		String[] reviewersArray = reviewers.split(",");
+		
+		if(reviewersArray.length >= 1) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	private boolean validateISSN(String ISSN) {		
 		String regex = "[0-9]+";
 		
 		Pattern pattern = Pattern.compile(regex);	
 		Matcher matcher = pattern.matcher(ISSN);
 
+		Magazine magazine = magazineService.findByISSN(ISSN);
 		
-		if(ISSN.length() == 8 && matcher.matches()) {
+		if(magazine == null && ISSN.length() == 8 && matcher.matches()) {
 			return true;
 		}
 		

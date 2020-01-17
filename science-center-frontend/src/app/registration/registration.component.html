@@ -13,17 +13,17 @@
               <input *ngIf="!field.email && !field.password" class="form-control" [formControlName]="field.id" [id]="field.id" type="text">
               <input *ngIf="field.email" class="form-control" [formControlName]="field.id" [id]="field.id" type="email">
               <input *ngIf="field.password" class="form-control" [formControlName]="field.id" [id]="field.id" type="password">
-            </div>
+          </div>
           <div *ngIf="field.type=='boolean'" class="form-group form-check">
             <input class="form-check-input" [formControlName]="field.id" [id]="field.id" type="checkbox">
             <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
           </div>
           <div *ngIf="field.type=='enum'" class="form-group">
             <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
-            <select *ngIf="field.multiple"  [formControlName]="field.id" multiple class="form-control" [id]="field.id" aria-describedby="comboHelp">
+            <select [multiple]="field.multiple"  [formControlName]="field.id" multiple class="form-control" [id]="field.id" aria-describedby="comboHelp">
               <option *ngFor="let valkey of field.values | keyvalue">{{valkey.value}}</option>
             </select>
-            <small id="comboHelp" class="form-text text-muted">Note: Please choose at least one.</small>
+          <small *ngIf="field.minNumber!==null" id="comboHelp" class="form-text text-muted">Note: Please choose at least {{field.minNumber}}.</small>
           </div>
         </div>
 

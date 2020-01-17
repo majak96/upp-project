@@ -26,7 +26,12 @@
             <camunda:value id="readers" name="readers" />
             <camunda:value id="authors" name="authors" />
           </camunda:formField>
-          <camunda:formField id="form_scientific_area" label="Scientific areas" type="enum" />
+          <camunda:formField id="form_scientific_area" label="Scientific areas" type="enum">
+            <camunda:properties>
+              <camunda:property id="multiple" />
+              <camunda:property id="min" value="1" />
+            </camunda:properties>
+          </camunda:formField>
         </camunda:formData>
         <camunda:taskListener delegateExpression="${registrationFormListener}" event="create" />
       </bpmn:extensionElements>
@@ -40,8 +45,17 @@
     <bpmn:userTask id="Task_0l9bab8" name="Dodavanje recenzenata i urednika naučne oblasti" camunda:assignee="${process_initiator}">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="form_reviewers" label="Reviewers" type="enum" />
-          <camunda:formField id="form_editors" label="Editors" type="enum" />
+          <camunda:formField id="form_reviewers" label="Reviewers" type="enum">
+            <camunda:properties>
+              <camunda:property id="multiple" value="true" />
+              <camunda:property id="min" value="2" />
+            </camunda:properties>
+          </camunda:formField>
+          <camunda:formField id="form_editors" label="Editors" type="enum">
+            <camunda:properties>
+              <camunda:property id="multiple" value="true" />
+            </camunda:properties>
+          </camunda:formField>
         </camunda:formData>
         <camunda:taskListener delegateExpression="${magazineFormListener}" event="create" />
       </bpmn:extensionElements>
@@ -62,7 +76,7 @@
     <bpmn:endEvent id="EndEvent_0i7ihr3">
       <bpmn:incoming>SequenceFlow_112dohx</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="ServiceTask_0t2x4in" name="Čuvanje aktivacije časopisa" camunda:expression="${true}" camunda:resultVariable="magazine_activated">
+    <bpmn:serviceTask id="ServiceTask_0t2x4in" name="Čuvanje aktivacije časopisa" camunda:class="upp.project.services.SaveMagazineActivationService">
       <bpmn:incoming>SequenceFlow_0d4jgkv</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_112dohx</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -73,25 +87,25 @@
       <bpmn:outgoing>SequenceFlow_10hx645</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_10hx645" sourceRef="ExclusiveGateway_1en9vmq" targetRef="UserTask_0rczcmu" />
-    <bpmn:userTask id="UserTask_0rczcmu" name="Provera unetih podataka o časopisu i izbor aktivacije časopisa" camunda:assignee="administrator">
+    <bpmn:userTask id="UserTask_0rczcmu" name="Provera unetih podataka o časopisu i izbor aktivacije časopisa" camunda:assignee="admin">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="form_name" label="Naziv" type="string" defaultValue="${form_name}">
-            <camunda:validation>
-              <camunda:constraint name="readonly" />
-            </camunda:validation>
+            <camunda:properties>
+              <camunda:property id="readonly" value="true" />
+            </camunda:properties>
           </camunda:formField>
-          <camunda:formField id="form_issn" label="ISSN" type="long" defaultValue="${form_issn}">
-            <camunda:validation>
-              <camunda:constraint name="readonly" />
-            </camunda:validation>
+          <camunda:formField id="form_issn" label="ISSN" type="string" defaultValue="${form_issn}">
+            <camunda:properties>
+              <camunda:property id="readonly" value="true" />
+            </camunda:properties>
           </camunda:formField>
           <camunda:formField id="form_payment" label="Način naplate članarine" type="enum" defaultValue="${form_payment}">
-            <camunda:validation>
-              <camunda:constraint name="readonly" />
-            </camunda:validation>
-            <camunda:value id="citaocima" name="čitaocima" />
-            <camunda:value id="autorima" name="autorima" />
+            <camunda:properties>
+              <camunda:property id="readonly" value="true" />
+            </camunda:properties>
+            <camunda:value id="readers" name="readers" />
+            <camunda:value id="authors" name="authors" />
           </camunda:formField>
           <camunda:formField id="f_act" label="Podaci su ispravni i časopis se aktivira" type="boolean" />
         </camunda:formData>
@@ -108,7 +122,7 @@
               <camunda:constraint name="required" />
             </camunda:validation>
           </camunda:formField>
-          <camunda:formField id="form_issn" label="ISSN" type="long" defaultValue="${form_issn}">
+          <camunda:formField id="form_issn" label="ISSN" type="string" defaultValue="${form_issn}">
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
@@ -117,8 +131,8 @@
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
-            <camunda:value id="citaocima" name="čitaocima" />
-            <camunda:value id="autorima" name="autorima" />
+            <camunda:value id="readers" name="readers" />
+            <camunda:value id="authors" name="authors" />
           </camunda:formField>
         </camunda:formData>
       </bpmn:extensionElements>
@@ -127,7 +141,7 @@
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_081nxoi" sourceRef="UserTask_09c09ul" targetRef="ServiceTask_17ei2v3" />
     <bpmn:sequenceFlow id="SequenceFlow_17t33t9" sourceRef="Task_0l9bab8" targetRef="ServiceTask_0om5yfx" />
-    <bpmn:serviceTask id="ServiceTask_17ei2v3" name="Čuvanje prepravljenih podataka" camunda:expression="${true}">
+    <bpmn:serviceTask id="ServiceTask_17ei2v3" name="Čuvanje prepravljenih podataka" camunda:class="upp.project.services.UpdateMagazineService">
       <bpmn:incoming>SequenceFlow_081nxoi</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1wnnwdi</bpmn:outgoing>
     </bpmn:serviceTask>

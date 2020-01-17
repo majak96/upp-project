@@ -1,3 +1,4 @@
+import { MagazineListComponent } from './magazine-list/magazine-list.component';
 import { TaskComponent } from './task/task.component';
 import { AuthGuardService } from './authentication/auth-guard.service';
 import { TaskListComponent } from './task-list/task-list.component';
@@ -32,6 +33,11 @@ const routes: Routes = [
   {
     path: 'tasks',
     component: TaskListComponent,
+    canActivate: [AuthGuardService]
+  },
+  {
+    path: 'magazines',
+    component: MagazineListComponent,
     canActivate: [AuthGuardService]
   },
   {

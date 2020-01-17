@@ -15,6 +15,7 @@ import { AuthInterceptor } from './authentication/auth.interceptor';
 import { NewMagazineComponent } from './new-magazine/new-magazine.component';
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskComponent } from './task/task.component';
+import { MagazineListComponent } from './magazine-list/magazine-list.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { TaskComponent } from './task/task.component';
     NewMagazineComponent,
     TaskListComponent,
     TaskComponent,
+    MagazineListComponent,
   ],
   imports: [
     BrowserModule,

@@ -19,12 +19,19 @@ public class FormFieldDTO {
 	
 	private Boolean password;
 	
+	private Boolean readonly;
+	
+	private Integer minNumber;
+	
+	private Object value;
+	
 	private Map<String, String> values = new LinkedHashMap<String,String>();
 
 	public FormFieldDTO() {
 		this.email = false;
 		this.password = false;
 		this.multiple = false;
+		this.readonly = false;
 	}
 
 	public FormFieldDTO(String id, String label, String type) {
@@ -34,6 +41,7 @@ public class FormFieldDTO {
 		this.email = false;
 		this.password = false;
 		this.multiple = false;
+		this.readonly = false;
 	}
 
 	public String getId() {
@@ -98,6 +106,30 @@ public class FormFieldDTO {
 
 	public void setMultiple(Boolean multiple) {
 		this.multiple = multiple;
+	}
+
+	public Boolean getReadonly() {
+		return readonly;
+	}
+
+	public void setReadonly(Boolean readonly) {
+		this.readonly = readonly;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+
+	public Integer getMinNumber() {
+		return minNumber;
+	}
+
+	public void setMinNumber(Integer minNumber) {
+		this.minNumber = minNumber;
 	}
 
 }

@@ -1,0 +1,23 @@
+<div style="margin-top: 70px; margin-bottom: 10px;" class="container">
+  <div class="row">
+    <div class="col-12 m-auto">
+      <div class="reg-title">
+        <h2>Magazines</h2>
+        <hr>
+        <h4 *ngIf="magazines.length===0">There are no magazines available at the moment.</h4>
+
+        <div *ngIf="magazines.length!==0" class="row">
+          <div class="col-4" *ngFor="let magazine of magazines" >
+            <div class="card border-secondary mb-3">
+              <div class="card-header text-center">{{magazine.name}}</div>
+              <div class="card-body text-secondary">
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,8 +1,10 @@
+import { Magazine } from './../model/magazine';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Form } from '../model/form';
 import { Value } from '../model/value';
+import { SubmitResponse } from '../model/submitresponse';
 
 @Injectable({
   providedIn: 'root'
@@ -19,21 +21,21 @@ export class MagazineService {
 
   startNewMagazineProcess(): Observable<Form> {
 
-    return this.http.get<Form>(this.baseUrl, this.httpOptions);
+    return this.http.get<Form>(this.baseUrl + 'form/', this.httpOptions);
   }
 
-  submitMagazineForm(formValues: Value[], taskId: string) {
+  submitMagazineForm(formValues: Value[], taskId: string): Observable<SubmitResponse> {
 
-    return this.http.post(this.baseUrl + taskId, formValues, this.httpOptions);
-  }
-
-  getUserFields(processId: string): Observable<Form> {
-
-    return this.http.get<Form>(this.baseUrl + processId, this.httpOptions);
+    return this.http.post<SubmitResponse>(this.baseUrl + 'form/' + taskId, formValues, this.httpOptions);
   }
 
   submitUsersForm(formValues: Value[], taskId: string) {
 
-    return this.http.post(this.baseUrl + 'users/' + taskId, formValues, this.httpOptions);
+    return this.http.post(this.baseUrl + 'form/users/' + taskId, formValues, this.httpOptions);
+  }
+
+  getAllMagazines(): Observable<Magazine[]> {
+
+    return this.http.get<Magazine[]>(this.baseUrl, this.httpOptions);
   }
 }

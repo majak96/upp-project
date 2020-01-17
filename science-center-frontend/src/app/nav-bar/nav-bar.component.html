@@ -16,6 +16,7 @@
           Magazines
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item nav-link" [routerLink]="['/magazines']">All magazines</a>
           <a *ngIf="role==='ROLE_EDITOR'" class="dropdown-item nav-link" [routerLink]="['/magazine/new']">Add a new magazine</a>
         </div>
       </li>

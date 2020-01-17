@@ -33,10 +33,6 @@ public class ProcessService {
 	
 	@Autowired
 	FormService formService;
-
-	public ProcessService() {
-		// TODO Auto-generated constructor stub
-	}
 	
 	/**
 	 * Starts the process and returns the first task of the process
@@ -84,6 +80,28 @@ public class ProcessService {
 					frontendField.setRequired(true);
 				}
 			}
+			
+			//check field properties
+			Map<String,String> fieldProperties = field.getProperties();
+			if(fieldProperties.keySet().contains("multiple")) {
+				frontendField.setMultiple(true);
+			}
+			else if(fieldProperties.keySet().contains("email")) {
+				frontendField.setEmail(true);
+			}
+			else if(fieldProperties.keySet().contains("password")) {
+				frontendField.setPassword(true);
+			}
+			
+			if(fieldProperties.keySet().contains("min")) {
+				frontendField.setMinNumber(Integer.parseInt(fieldProperties.get("min")));
+			}
+			
+			if(fieldProperties.keySet().contains("readonly")) {
+				frontendField.setReadonly(true);
+			}
+			
+			frontendField.setValue(field.getValue().getValue());
 			
 			//set enumeration values
 			if(field.getType().getName().equals("enum")) {
@@ -147,7 +165,6 @@ public class ProcessService {
 		
 		return taskDTOs;
  	}
-	
 	
 	private HashMap<String, Object> mapListToDto(List<FormValueDTO> formValues) {
 		HashMap<String, Object> valuesMap = new HashMap<String,Object>();

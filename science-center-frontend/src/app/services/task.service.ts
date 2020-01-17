@@ -14,13 +14,13 @@ export class TaskService {
     headers: new HttpHeaders({ 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' })
   };
 
-  baseUrl = 'http://localhost:9997/user/';
+  baseUrl = 'http://localhost:9997/task/';
 
   constructor(private http: HttpClient) { }
 
   getTasks(): Observable<Task[]> {
 
-    return this.http.get<Task[]>(this.baseUrl + 'task', this.httpOptions);
+    return this.http.get<Task[]>(this.baseUrl, this.httpOptions);
   }
 
   getTask(taskId: string): Observable<Form> {
@@ -30,6 +30,6 @@ export class TaskService {
 
   submitTask(formValues: Value[], taskId: string) {
 
-    return this.http.post(this.baseUrl + 'task/' + taskId, formValues, this.httpOptions);
+    return this.http.post(this.baseUrl + taskId, formValues, this.httpOptions);
   }
 }

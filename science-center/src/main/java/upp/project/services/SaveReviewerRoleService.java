@@ -20,7 +20,7 @@ public class SaveReviewerRoleService implements JavaDelegate{
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Saving reviewer role.");
+		System.out.println("Saving reviewer role");
 						
 		String username = (String) execution.getVariable("registrationUsername");
 		Boolean reviewerConfirmation = (Boolean) execution.getVariable("reviewer_confirm");
@@ -34,8 +34,6 @@ public class SaveReviewerRoleService implements JavaDelegate{
 				user.setAuthority(authorityService.findByRole(Role.ROLE_REVIEWER));
 				userService.save(user);
 			}
-		}
-			
+		}	
 	}
-
 }

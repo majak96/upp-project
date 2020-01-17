@@ -37,6 +37,12 @@ public class Magazine {
 	private RegisteredUser editorInChief;
 	
 	@ManyToMany
+	private Set<RegisteredUser> reviewers = new HashSet<RegisteredUser>();
+	
+	@ManyToMany
+	private Set<RegisteredUser> editors = new HashSet<RegisteredUser>();
+	
+	@ManyToMany
 	private Set<ScientificArea> scientificAreas = new HashSet<>();
 
 	public Magazine() {
@@ -103,6 +109,22 @@ public class Magazine {
 
 	public void setActive(Boolean active) {
 		this.active = active;
+	}
+
+	public Set<RegisteredUser> getReviewers() {
+		return reviewers;
+	}
+
+	public void setReviewers(Set<RegisteredUser> reviewers) {
+		this.reviewers = reviewers;
+	}
+
+	public Set<RegisteredUser> getEditors() {
+		return editors;
+	}
+
+	public void setEditors(Set<RegisteredUser> editors) {
+		this.editors = editors;
 	}
 
 }

@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Field } from '../model/field';
+import { TaskService } from '../services/task.service';
 
 @Component({
   selector: 'app-registration',
@@ -15,8 +16,10 @@ export class RegistrationComponent implements OnInit {
   registrationForm: FormGroup;
   fieldList: Field[];
   taskId: string;
+  nextTaskId: string;
 
   constructor(private registrationService: RegistrationService,
+              private taskService: TaskService,
               private router: Router) { }
 
   ngOnInit() {
@@ -28,7 +31,6 @@ export class RegistrationComponent implements OnInit {
   initializeRegistrationForm()  {
     this.registrationService.startRegistrationProcess().subscribe(
       data => {
-        console.log('Started the registration process.');
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
 
@@ -38,6 +40,21 @@ export class RegistrationComponent implements OnInit {
         alert('An error occured.');
       }
     );
+  }
+
+  getNextTask() {
+    this.taskService.getTask(this.nextTaskId).subscribe(
+      data => {
+        this.taskId = data.taskId;
+        this.fieldList = data.fieldList;
+
+        this.registrationForm = this.createFormGroup(data.fieldList);
+      },
+      error => {
+        alert('An error occured.');
+      }
+    );
+
   }
 
   // creates a form group from a list of fields
@@ -64,7 +81,15 @@ export class RegistrationComponent implements OnInit {
 
     });
 
-    return new FormGroup(group);
+    const formgroup = new FormGroup(group);
+
+    fields.forEach(field => {
+      if (field.value !== null) {
+        formgroup.get(field.id).setValue(field.value);
+      }
+    });
+
+    return formgroup;
   }
 
   // submits the registration data
@@ -77,9 +102,15 @@ export class RegistrationComponent implements OnInit {
 
     this.registrationService.submitRegistrationForm(valuesList, this.taskId).subscribe(
       data => {
-        alert('Successfully registered! Please check your email to confirm your account.');
+        this.nextTaskId = data.nextTask;
 
-        this.router.navigateByUrl('');
+        if (this.nextTaskId !== null) {
+          alert('The data you entered is not valid. Please try again!');
+          this.getNextTask();
+        } else {
+          alert('Successfully registered! Please check your email to confirm your account.');
+          this.router.navigateByUrl('');
+        }
       },
       error => {
         if (error.status === 400) {
@@ -92,15 +123,26 @@ export class RegistrationComponent implements OnInit {
 
   }
 
-  // validates form
-  validateForm() {
-    const scientificAreas: string[] = this.registrationForm.value['form_scientific_area'];
+    // validates form
+    validateForm() {
 
-    if (this.registrationForm.valid && scientificAreas.length >= 1) {
-      return true;
+      let result = true;
+
+      // check required enum fields
+      this.fieldList.forEach(field => {
+        let list: string[] = [];
+        if (field.minNumber != null && field.type === 'enum') {
+          list = this.registrationForm.value[field.id];
+
+        }
+
+        if (list.length < field.minNumber) {
+          result = false;
+        }
+      });
+
+      // also check if the rest of the fields are valid
+      return result && this.registrationForm.valid;
     }
-
-    return false;
-  }
 
 }

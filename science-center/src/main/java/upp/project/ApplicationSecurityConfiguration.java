@@ -54,9 +54,10 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
 			.authorizeRequests()
 			.antMatchers("/login").permitAll()
 			.antMatchers("/registration/**").permitAll()
-			.antMatchers("/user/login").permitAll()
-			.antMatchers("/magazine/**").hasRole("EDITOR")
-			.antMatchers("/user/**").authenticated()
+			.antMatchers("/magazine/form/**").hasRole("EDITOR")
+			.antMatchers("/magazine/**").authenticated()
+			.antMatchers("/task/task/**").permitAll()
+			.antMatchers("/task/**").authenticated()
 			.anyRequest().permitAll();
 		
 	}
@@ -76,7 +77,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");  // TODO: lock down before deploying
+        config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         config.addExposedHeader(HttpHeaders.AUTHORIZATION);
         config.addAllowedMethod("*");

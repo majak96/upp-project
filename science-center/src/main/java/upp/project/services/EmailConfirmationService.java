@@ -17,7 +17,7 @@ public class EmailConfirmationService implements JavaDelegate{
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Email confirmation service.");
+		System.out.println("Saving email confirmation");
 						
 		String username = (String) execution.getVariable("registrationUsername");
 				
@@ -26,8 +26,6 @@ public class EmailConfirmationService implements JavaDelegate{
 		if(user != null) {
 			user.setConfirmed(true);
 			userService.save(user);
-		}
-		
+		}	
 	}
-
 }
