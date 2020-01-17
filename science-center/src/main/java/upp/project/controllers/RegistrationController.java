@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import upp.project.dtos.FormDTO;
 import upp.project.dtos.FormFieldDTO;
@@ -101,7 +102,18 @@ public class RegistrationController {
 	@GetMapping(value = "/confirm")
 	public ResponseEntity<?> confirmRegistration(@RequestParam String username, @RequestParam String processInstanceId) {
 		
-		System.out.println("Confirming registration for " + username);
+		System.out.println("Confirming registration");
+		
+		String hashedValue = (String) processService.getProcessVariable(processInstanceId, "hashedValue");		
+		boolean result = BCrypt.checkpw(username, hashedValue);
+		
+		if(!result) {
+			HttpHeaders headersRedirect = new HttpHeaders();
+			headersRedirect.add("Location", "http://localhost:4200/emailconfirmationerror");
+			headersRedirect.add("Access-Control-Allow-Origin", "*");
+			
+			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
+		}
 		
 		RegisteredUser user = userService.findByUsername(username);
 		
@@ -114,9 +126,6 @@ public class RegistrationController {
 			
 			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
 		}
-		
-		//save username as a process variable
-		processService.setProcessVariable(processInstanceId, "registrationUsername", username);
 		
 		//get the next task - for email confirmation
 		String taskId = processService.getNextTaskId(processInstanceId);

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import upp.project.dtos.FormValueDTO;
@@ -49,6 +50,14 @@ public class RegistrationService implements JavaDelegate{
 		RegisteredUser newUser = createUser(formValues);			
 		userService.save(newUser);		
 		
+		//save username as process variable
+		execution.setVariable("registrationUsername", newUser.getUsername());
+		
+		String salt = BCrypt.gensalt();
+        String hashedValue = BCrypt.hashpw(newUser.getUsername(), salt);
+        
+        execution.setVariable("hashedValue", hashedValue);
+		
 		//send email for account confirmation
 		sendConfirmationEmail(newUser, execution.getProcessInstance().getId());
 		
@@ -64,7 +73,7 @@ public class RegistrationService implements JavaDelegate{
 		//create the user
 		RegisteredUser user = new RegisteredUser(valuesMap.get("form_first_name"), valuesMap.get("form_last_name"), valuesMap.get("form_city"), valuesMap.get("form_country"), 
 				valuesMap.get("form_title"), valuesMap.get("form_email"), valuesMap.get("form_username"), passwordEncoder.encode(valuesMap.get("form_password")));
-		
+
 		//set user type - all users are regular users in the beginning
 		user.setAuthority(authorityService.findByRole(Role.ROLE_USER));
 		
@@ -74,15 +83,15 @@ public class RegistrationService implements JavaDelegate{
 		for(String area : areas) {
 			user.getScientificAreas().add(scientificAreaService.findByName(area));
 		}
-				
+						
 		return user;
 	}
 	
-	private void sendConfirmationEmail(RegisteredUser user, String processInstanceId) {
+	private void sendConfirmationEmail(RegisteredUser user, String processInstanceId) { 
 		
 		String confirmationLinkBase = "http://localhost:9997/registration/confirm";		
 		String confirmationLink = confirmationLinkBase + "?username=" + user.getUsername() + "&processInstanceId=" + processInstanceId;
-		
+				
 		String messageText = "<div style=\"text-center\">"
 						   + "<h2>"
 						   + "<a href=\"" + confirmationLink + "\">Click here to confirm your account</a>"

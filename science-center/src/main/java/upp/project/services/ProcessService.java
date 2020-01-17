@@ -149,6 +149,14 @@ public class ProcessService {
 	}
 	
 	/**
+	 * Creates a new process variable
+	 */
+	public Object getProcessVariable(String processInstanceId, String processVariableName) {
+			
+		return runtimeService.getVariable(processInstanceId, processVariableName);
+	}
+	
+	/**
 	 * Gets all available tasks for the user with the username
 	 */
 	public List<TaskDTO> getTasksForUser(String username) {
