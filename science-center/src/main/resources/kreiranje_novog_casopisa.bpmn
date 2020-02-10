@@ -32,6 +32,14 @@
               <camunda:property id="min" value="1" />
             </camunda:properties>
           </camunda:formField>
+          <camunda:formField id="form_price" label="Monthly membership price" type="long">
+            <camunda:properties>
+              <camunda:property id="min" value="0" />
+            </camunda:properties>
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
         </camunda:formData>
         <camunda:taskListener delegateExpression="${registrationFormListener}" event="create" />
       </bpmn:extensionElements>

@@ -61,11 +61,11 @@ INSERT INTO registered_user_scientific_areas(registered_user_id, scientific_area
 INSERT INTO registered_user_scientific_areas(registered_user_id, scientific_areas_id) VALUES (1008, 2);
 
 
-INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id) VALUES (1000, 38475938, true, 'Magazine One', 'AUTHORS', 1001);
-INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id) VALUES (1001, 48594837, true, 'Magazine Two', 'READERS', 1002);
-INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id) VALUES (1002, 67582948, true, 'Magazine Three', 'READERS', 1003);
-INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id) VALUES (1003, 68574930, true, 'Magazine Four', 'READERS', 1004);
-INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id) VALUES (1004, 39485837, true, 'Magazine Five', 'READERS', 1010);
+INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price) VALUES (1000, 38475938, true, 'Magazine One', 'AUTHORS', 1001, 50);
+INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price) VALUES (1001, 48594837, true, 'Magazine Two', 'READERS', 1002, 67);
+INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price) VALUES (1002, 67582948, true, 'Magazine Three', 'READERS', 1003, 12);
+INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price) VALUES (1003, 68574930, true, 'Magazine Four', 'READERS', 1004, 45);
+INSERT INTO magazine(id, issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price) VALUES (1004, 39485837, true, 'Magazine Five', 'READERS', 1010, 56);
 
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (1000, 1);
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (1000, 3);

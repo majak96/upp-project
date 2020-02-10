@@ -11,6 +11,8 @@ import org.camunda.bpm.engine.identity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
@@ -29,6 +31,11 @@ public class ScienceCenterApplication {
 		SpringApplication.run(ScienceCenterApplication.class, args);
 		
 	}
+	
+    @Bean
+    public RestTemplate getRestTemplate() {
+    	return new RestTemplate();
+    }
 	
 	@PostConstruct
     public void createCamundaGroupsAndUsers() { 

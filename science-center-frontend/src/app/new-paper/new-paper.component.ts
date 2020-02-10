@@ -113,6 +113,10 @@ export class NewPaperComponent implements OnInit {
       data => {
         this.nextTaskId = data.nextTask;
 
+        if (data.redirectLink != null) {
+          document.location.href  = data.redirectLink;
+        }
+
         if (this.nextTaskId !== null) {
 
           // invalid data

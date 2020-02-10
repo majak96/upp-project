@@ -33,6 +33,12 @@ public class Magazine {
 	@Column
 	private Boolean active;
 	
+	@Column
+	private Double monthlyMembershipPrice;
+	
+	@Column
+	private String email;
+	
 	@ManyToOne
 	private RegisteredUser editorInChief;
 	
@@ -49,10 +55,12 @@ public class Magazine {
 
 	}
 
-	public Magazine(String name, String ISSN) {
+	public Magazine(String name, String ISSN, Double monthlyMembershipPrice) {
 		this.name = name;
 		this.ISSN = ISSN;
+		this.monthlyMembershipPrice = monthlyMembershipPrice;
 		this.active = false;
+		this.email = "mail@gmail.com";
 	}
 
 	public Long getId() {
@@ -130,6 +138,26 @@ public class Magazine {
 	@Override
 	public String toString() {
 		return id + " | " + name;
+	}
+
+	public Double getMonthlyMembershipPrice() {
+		return monthlyMembershipPrice;
+	}
+
+	public void setMonthlyMembershipPrice(Double monthlyMembershipPrice) {
+		this.monthlyMembershipPrice = monthlyMembershipPrice;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 }

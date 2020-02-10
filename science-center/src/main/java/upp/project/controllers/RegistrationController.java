@@ -75,7 +75,7 @@ public class RegistrationController {
 		
 		if(!result) {
 			HttpHeaders headersRedirect = new HttpHeaders();
-			headersRedirect.add("Location", "http://localhost:4200/emailconfirmationerror");
+			headersRedirect.add("Location", "https://localhost:4200/emailconfirmationerror");
 			headersRedirect.add("Access-Control-Allow-Origin", "*");
 			
 			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
@@ -87,7 +87,7 @@ public class RegistrationController {
 		//redirecting to the error page
 		if(user == null || user.isConfirmed()) {
 			HttpHeaders headersRedirect = new HttpHeaders();
-			headersRedirect.add("Location", "http://localhost:4200/emailconfirmationerror");
+			headersRedirect.add("Location", "https://localhost:4200/emailconfirmationerror");
 			headersRedirect.add("Access-Control-Allow-Origin", "*");
 			
 			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);

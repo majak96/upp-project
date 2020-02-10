@@ -49,6 +49,12 @@ public class ValidateMagazineService implements JavaDelegate{
 					break;
 				}
 			}
+			else if(formValue.getId().equals("form_price")) {
+				if(!validatePrice((Double)formValue.getValue())) {
+					validation = false;
+					break;
+				}
+			}
 		}
 		
 		if(!validation) {
@@ -61,6 +67,15 @@ public class ValidateMagazineService implements JavaDelegate{
 	
 	private boolean validateScientificAreas(List<String> scientificAreas) {				
 		if(scientificAreas.size() >= 1) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean validatePrice(Double price) {
+		if(price >= 0) {
+			
 			return true;
 		}
 		

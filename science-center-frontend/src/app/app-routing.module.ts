@@ -16,6 +16,9 @@ import { RoleGuardService } from './authentication/role-guard.service';
 import { UsersPaneComponent } from './users-pane/users-pane.component';
 import { NewUserComponent } from './new-user/new-user.component';
 import { NewPaperComponent } from './new-paper/new-paper.component';
+import { SuccessPageComponent } from './success-page/success-page.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
+import { FailPageComponent } from './fail-page/fail-page.component';
 
 
 const routes: Routes = [
@@ -79,6 +82,18 @@ const routes: Routes = [
   {
     path: 'emailconfirmationerror',
     component: EmailConfirmationErrorComponent
+  },
+  {
+    path: 'paymentsuccess',
+    component: SuccessPageComponent
+  },
+  {
+    path: 'paymenterror',
+    component: ErrorPageComponent
+  },
+  {
+    path: 'paymentfail',
+    component: FailPageComponent
   },
   {
     path: '**',

@@ -120,12 +120,6 @@ public class TaskController {
 		Object redirectLink = processService.getProcessVariable(processInstanceId, "redirect_link");
 		if(redirectLink != null) {
 			processService.setProcessVariable(processInstanceId, "redirect_link", null);
-			
-			HttpHeaders headersRedirect = new HttpHeaders();
-			headersRedirect.add("Location", (String) redirectLink);
-			headersRedirect.add("Access-Control-Allow-Origin", "*");
-			
-			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
 		}
 		
 		String currentUser = identityService.getCurrentAuthentication() == null ? "guest" : identityService.getCurrentAuthentication().getUserId();
@@ -136,7 +130,7 @@ public class TaskController {
 				
 		//return task id of the next task if it exists
 		if(nextTask != null && valid != null) {
-			return ResponseEntity.ok(new SubmitResponseDTO(nextTask.getId(), valid));
+			return ResponseEntity.ok(new SubmitResponseDTO(nextTask.getId(), valid, redirectLink));
 		}
 		else {
 			return ResponseEntity.ok(new SubmitResponseDTO());
