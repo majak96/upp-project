@@ -42,21 +42,6 @@ export class RegistrationComponent implements OnInit {
     );
   }
 
-  getNextTask() {
-    this.taskService.getTask(this.nextTaskId).subscribe(
-      data => {
-        this.taskId = data.taskId;
-        this.fieldList = data.fieldList;
-
-        this.registrationForm = this.createFormGroup(data.fieldList);
-      },
-      error => {
-        alert('An error occured.');
-      }
-    );
-
-  }
-
   // creates a form group from a list of fields
   createFormGroup(fields: Field[]) {
     const group: any = {};
@@ -92,23 +77,50 @@ export class RegistrationComponent implements OnInit {
     return formgroup;
   }
 
-  // submits the registration data
+  // gets task fields with the task id
+  getNextTask() {
+    this.taskService.getTask(this.nextTaskId).subscribe(
+      data => {
+        this.taskId = data.taskId;
+        this.fieldList = data.fieldList;
+
+        this.registrationForm = this.createFormGroup(data.fieldList);
+      },
+      error => {
+        alert('An error occured.');
+      }
+    );
+  }
+
+  // submits the data from the registration form
   onSubmit() {
+    // create a list of objects to submit
     const valuesList = new Array<Value>();
 
     this.fieldList.forEach(field => {
-      valuesList.push({id: field.id, value: this.registrationForm.value[field.id].toString()});
+      if (field.type === 'enum' && field.multiple === false) {
+        valuesList.push({id: field.id, value: this.registrationForm.value[field.id].toString()});
+      } else {
+        valuesList.push({id: field.id, value: this.registrationForm.value[field.id]});
+      }
     });
 
-    this.registrationService.submitRegistrationForm(valuesList, this.taskId).subscribe(
+    // submit the data
+    this.taskService.submitFormTask(valuesList, this.taskId).subscribe(
       data => {
         this.nextTaskId = data.nextTask;
 
         if (this.nextTaskId !== null) {
-          alert('The data you entered is not valid. Please try again!');
-          this.getNextTask();
+          // invalid data
+          if (data.valid === false) {
+            alert('The data you entered is not valid. Please try again!');
+            this.getNextTask();
+          } else {
+            alert('Successfully registered! Please check your email to confirm your account.');
+            this.router.navigateByUrl('');
+          }
+
         } else {
-          alert('Successfully registered! Please check your email to confirm your account.');
           this.router.navigateByUrl('');
         }
       },

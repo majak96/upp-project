@@ -6,14 +6,13 @@ public class FormValueDTO implements Serializable{
 	
 	private String id;
 	
-	private String value;
+	private Object value;
 
 	public FormValueDTO() {
 		// TODO Auto-generated constructor stub
 	}
-
-	public FormValueDTO(String id, String value) {
-		super();
+	
+	public FormValueDTO(String id, Object value) {
 		this.id = id;
 		this.value = value;
 	}
@@ -26,11 +25,11 @@ public class FormValueDTO implements Serializable{
 		this.id = id;
 	}
 
-	public String getValue() {
+	public Object getValue() {
 		return value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(Object value) {
 		this.value = value;
 	}
 

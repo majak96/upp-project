@@ -55,9 +55,11 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
 			.antMatchers("/login").permitAll()
 			.antMatchers("/registration/**").permitAll()
 			.antMatchers("/magazine/form/**").hasRole("EDITOR")
+			.antMatchers("/user/**").hasRole("ADMINISTRATOR")
+			.antMatchers("/scientificarea/**").hasRole("ADMINISTRATOR")
 			.antMatchers("/magazine/**").authenticated()
 			.antMatchers("/task/task/**").permitAll()
-			.antMatchers("/task/**").authenticated()
+			.antMatchers("/task/**").permitAll()
 			.anyRequest().permitAll();
 		
 	}

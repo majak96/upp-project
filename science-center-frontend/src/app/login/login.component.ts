@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
     const formValues = {username: this.loginForm.value['username'],
                       password: this.loginForm.value['password']}
 
+
     this.autheticationService.submitLoginForm(formValues).subscribe(
       data => {
         console.log('Successfully logged in.');

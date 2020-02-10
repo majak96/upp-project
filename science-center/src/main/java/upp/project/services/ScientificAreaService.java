@@ -23,5 +23,10 @@ public class ScientificAreaService {
 		
 		return scientificAreaRepository.findByName(name);
 	}
+	
+	public ScientificArea findById(Long id) {
+		
+		return scientificAreaRepository.getOne(id);
+	}
 
 }

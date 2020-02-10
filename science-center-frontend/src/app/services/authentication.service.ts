@@ -9,7 +9,7 @@ import { Login } from '../model/login';
 })
 export class AuthenticationService {
 
-  baseUrl = 'http://localhost:9997/login';
+  baseUrl = 'https://localhost:9997/login';
 
   constructor(private http: HttpClient) { }
 

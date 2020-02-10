@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.form.FormFieldValidationConstraint;
 import org.camunda.bpm.engine.form.TaskFormData;
+import org.camunda.bpm.engine.identity.Group;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class ProcessService {
 	
 	@Autowired
 	TaskService taskService;
+	
+	@Autowired
+	IdentityService identityService;
 	
 	@Autowired
 	FormService formService;
@@ -91,6 +96,9 @@ public class ProcessService {
 			}
 			else if(fieldProperties.keySet().contains("password")) {
 				frontendField.setPassword(true);
+			}
+			else if(fieldProperties.keySet().contains("textarea")) {
+				frontendField.setTextarea(true);
 			}
 			
 			if(fieldProperties.keySet().contains("min")) {
@@ -157,15 +165,38 @@ public class ProcessService {
 	}
 	
 	/**
+	 * Check if the process instance still exists
+	 */
+	public boolean processInstanceExists(String processInstanceId) {
+		
+		ProcessInstance pInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+		
+		return pInstance == null ? false : true;
+	}
+		
+	/**
 	 * Gets all available tasks for the user with the username
 	 */
 	public List<TaskDTO> getTasksForUser(String username) {
 		
-		List<Task> tasks = taskService.createTaskQuery().taskAssignee(username).list();
+		List<Group> userGroups = identityService.createGroupQuery().groupMember(username).list();		
+		List<String> groupNames = mapGroupsToString(userGroups);
 		
+		//get tasks for user groups
+		List<Task> groupTasks = taskService.createTaskQuery().taskCandidateGroupIn(groupNames).list();
+				
 		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
 		
-		for(Task task : tasks) {
+		for(Task task : groupTasks) {
+			TaskDTO taskDTO = new TaskDTO(task.getId(), task.getName());
+			
+			taskDTOs.add(taskDTO);
+		}
+		
+		//get task for user 
+		List<Task> userTasks = taskService.createTaskQuery().taskAssignee(username).list();
+		
+		for(Task task : userTasks) {
 			TaskDTO taskDTO = new TaskDTO(task.getId(), task.getName());
 			
 			taskDTOs.add(taskDTO);
@@ -173,6 +204,15 @@ public class ProcessService {
 		
 		return taskDTOs;
  	}
+	
+	/**
+	 * Get all available tasks for a group
+	 */
+	public List<Task> getGroupTasks(String groupName) {
+		List<Task> groupTasks = taskService.createTaskQuery().taskCandidateGroup(groupName).list();
+		
+		return groupTasks;
+	}
 	
 	private HashMap<String, Object> mapListToDto(List<FormValueDTO> formValues) {
 		HashMap<String, Object> valuesMap = new HashMap<String,Object>();
@@ -182,6 +222,16 @@ public class ProcessService {
 		}
 		
 		return valuesMap;
+	}
+	
+	private List<String> mapGroupsToString(List<Group> groups){
+		List<String> groupNames = new ArrayList<String>();
+		
+		for(Group group : groups) {
+			groupNames.add(group.getId());
+		}
+		
+		return groupNames;
 	}
 	
 	

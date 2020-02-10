@@ -1,6 +1,6 @@
-<div style="margin-top: 70px; margin-bottom: 10px;" class="container">
+<div style="margin-top: 100px; margin-bottom: 10px;" class="container">
   <div class="row">
-    <div class="col-6 m-auto">
+    <div class="col-8 m-auto">
       <div class="reg-title">
         <h2>Add a new magazine</h2>
         <hr>
@@ -21,7 +21,7 @@
           <div *ngIf="field.type=='enum'" class="form-group">
             <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
             <select [multiple]="field.multiple"  [formControlName]="field.id" multiple class="form-control" [id]="field.id" aria-describedby="comboHelp">
-              <option *ngFor="let valkey of field.values | keyvalue; index as i">{{valkey.value}}</option>
+              <option *ngFor="let valkey of field.values | keyvalue; index as i" >{{valkey.value}}</option>
             </select>
           </div>
           <small *ngIf="field.minNumber!==null" id="comboHelp" class="form-text text-muted">Note: Please choose at least {{field.minNumber}}.</small>

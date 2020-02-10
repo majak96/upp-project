@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1h0scm1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.4.1">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1h0scm1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.6.0">
   <bpmn:process id="user_registration" name="Registracija korisnika" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" camunda:initiator="process_initiator">
       <bpmn:outgoing>SequenceFlow_12ynuqo</bpmn:outgoing>
@@ -9,7 +9,7 @@
       <bpmn:incoming>SequenceFlow_05egif5</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0sjfumq" sourceRef="Task_0e0u3sv" targetRef="ServiceTask_0foco84" />
-    <bpmn:userTask id="Task_0e0u3sv" name="Unos osnovnih podataka&#10;" camunda:assignee="${process_initiator}" camunda:priority="1">
+    <bpmn:userTask id="Task_0e0u3sv" name="Basic user data input" camunda:assignee="guest" camunda:priority="1">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="form_first_name" label="First name" type="string">
@@ -73,36 +73,36 @@
       <bpmn:outgoing>SequenceFlow_1t6cjrz</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_05egif5</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1t6cjrz" name="Korisnik se prijavio kao recenzent" sourceRef="ExclusiveGateway_1gdsn70" targetRef="Task_191x6x5">
+    <bpmn:sequenceFlow id="SequenceFlow_1t6cjrz" name="User has signed up to be a reviewer" sourceRef="ExclusiveGateway_1gdsn70" targetRef="Task_191x6x5">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${form_reviewer == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_05egif5" name="Korisnik se nije prijavio kao recenzent" sourceRef="ExclusiveGateway_1gdsn70" targetRef="EndEvent_1qva4xj">
+    <bpmn:sequenceFlow id="SequenceFlow_05egif5" name="User has not signed up to be a reviewer" sourceRef="ExclusiveGateway_1gdsn70" targetRef="EndEvent_1qva4xj">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${form_reviewer == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="EndEvent_0xkjp90">
       <bpmn:incoming>SequenceFlow_02rsvnh</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_15628v8" sourceRef="Task_191x6x5" targetRef="Task_0t0d08r" />
-    <bpmn:serviceTask id="Task_19z7vgb" name="Čuvanje podataka i slanje email-a sa linkom za potvrdu" camunda:class="upp.project.services.RegistrationService">
+    <bpmn:serviceTask id="Task_19z7vgb" name="Saving data and sending an email with a confirmation link" camunda:class="upp.project.services.camunda.registration.RegistrationService">
       <bpmn:incoming>SequenceFlow_1hqblv9</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1mulamd</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="Task_191x6x5" name="Potvrda statusa recenzenta" camunda:assignee="admin">
+    <bpmn:userTask id="Task_191x6x5" name="Confirmation of reviewer status" camunda:candidateGroups="admins">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="reviewer_confirm" label="Potvrđujem da je korisnik ${registrationUsername} recenzent" type="boolean" />
+          <camunda:formField id="reviewer_confirm" label="I confirm user with the username ${registrationUsername} is a reviewer" type="boolean" />
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1t6cjrz</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15628v8</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="SequenceFlow_02rsvnh" sourceRef="Task_0t0d08r" targetRef="EndEvent_0xkjp90" />
-    <bpmn:serviceTask id="Task_0t0d08r" name="Čuvanje potvrde statusa recenzenta" camunda:class="upp.project.services.SaveReviewerRoleService">
+    <bpmn:serviceTask id="Task_0t0d08r" name="Saving confirmation of reviewer status" camunda:class="upp.project.services.camunda.registration.SaveReviewerRoleService">
       <bpmn:incoming>SequenceFlow_15628v8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_02rsvnh</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_12la6xz" sourceRef="Task_09wkpqn" targetRef="ExclusiveGateway_1gdsn70" />
-    <bpmn:serviceTask id="Task_09wkpqn" name="Čuvanje potvrde prijave" camunda:class="upp.project.services.EmailConfirmationService">
+    <bpmn:serviceTask id="Task_09wkpqn" name="Saving registration confirmation" camunda:class="upp.project.services.camunda.registration.EmailConfirmationService">
       <bpmn:incoming>SequenceFlow_1yx1g48</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12la6xz</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -117,21 +117,21 @@
       <bpmn:outgoing>SequenceFlow_0o20rl5</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_0o20rl5" sourceRef="ExclusiveGateway_1qecsjq" targetRef="Task_0e0u3sv" />
-    <bpmn:sequenceFlow id="SequenceFlow_14merbs" name="Podaci nisu ispravni&#10;&#10;" sourceRef="ExclusiveGateway_06tjn4q" targetRef="ExclusiveGateway_1qecsjq">
+    <bpmn:sequenceFlow id="SequenceFlow_14merbs" name="Invalid data" sourceRef="ExclusiveGateway_06tjn4q" targetRef="ExclusiveGateway_1qecsjq">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${data_check == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="ServiceTask_0foco84" name="Provera ispravnosti unetih podataka" camunda:class="upp.project.services.ValidateRegistrationService">
+    <bpmn:serviceTask id="ServiceTask_0foco84" name="Validation of user data" camunda:class="upp.project.services.camunda.registration.ValidateRegistrationService">
       <bpmn:incoming>SequenceFlow_0sjfumq</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1gbzt59</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1hqblv9" name="Podaci su ispravni&#10;&#10;" sourceRef="ExclusiveGateway_06tjn4q" targetRef="Task_19z7vgb">
+    <bpmn:sequenceFlow id="SequenceFlow_1hqblv9" name="Valid data" sourceRef="ExclusiveGateway_06tjn4q" targetRef="Task_19z7vgb">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${data_check == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1gbzt59" sourceRef="ServiceTask_0foco84" targetRef="ExclusiveGateway_06tjn4q" />
-    <bpmn:userTask id="Task_1wjj53f" name="Potvrda prijave" camunda:assignee="${process_initiator}">
+    <bpmn:userTask id="Task_1wjj53f" name="Confirmation of registration" camunda:assignee="guest">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="email_confirm" label="Potvrđujem prijavu" type="boolean" defaultValue="false">
+          <camunda:formField id="email_confirm" label="Confirming registration" type="boolean" defaultValue="false">
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
@@ -174,7 +174,7 @@
         <di:waypoint x="1300" y="320" />
         <di:waypoint x="1400" y="320" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1271" y="250" width="57" height="40" />
+          <dc:Bounds x="1260" y="250" width="80" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_05egif5_di" bpmnElement="SequenceFlow_05egif5">
@@ -182,7 +182,7 @@
         <di:waypoint x="1300" y="90" />
         <di:waypoint x="1692" y="90" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1262" y="110" width="75" height="40" />
+          <dc:Bounds x="1258" y="110" width="86" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0xkjp90_di" bpmnElement="EndEvent_0xkjp90">
@@ -228,7 +228,7 @@
         <di:waypoint x="270" y="80" />
         <di:waypoint x="270" y="172" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="641" y="103" width="57" height="53" />
+          <dc:Bounds x="640" y="133" width="59" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_0foco84_di" bpmnElement="ServiceTask_0foco84">
@@ -238,7 +238,7 @@
         <di:waypoint x="695" y="197" />
         <di:waypoint x="810" y="197" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="695" y="177" width="90" height="40" />
+          <dc:Bounds x="717" y="177" width="49" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1gbzt59_di" bpmnElement="SequenceFlow_1gbzt59">

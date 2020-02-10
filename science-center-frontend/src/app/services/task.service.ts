@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Form } from '../model/form';
 import { Value } from '../model/value';
+import { SubmitResponse } from '../model/submitresponse';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class TaskService {
     headers: new HttpHeaders({ 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' })
   };
 
-  baseUrl = 'http://localhost:9997/task/';
+  baseUrl = 'https://localhost:9997/task/';
 
   constructor(private http: HttpClient) { }
 
@@ -32,4 +33,12 @@ export class TaskService {
 
     return this.http.post(this.baseUrl + taskId, formValues, this.httpOptions);
   }
+
+  submitFormTask(formValues: Value[], taskId: string): Observable<SubmitResponse> {
+
+    console.log(this.baseUrl + taskId);
+
+    return this.http.post<SubmitResponse>(this.baseUrl + taskId, formValues, this.httpOptions);
+  }
+
 }

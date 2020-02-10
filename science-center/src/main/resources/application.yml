@@ -40,4 +40,13 @@ spring:
         
 server:
   port: 9997
+  ssl:
+    enabled: true
+    key-store: classpath:science_center_keyStore.jks
+    key-store-password: password
+    key-alias: science-center
+    key-store-type: JKS
+    trust-store: classpath:science_center_trustedStore.jks
+    trust-store-password: password
+    trust-store-type: JKS
   

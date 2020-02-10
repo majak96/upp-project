@@ -1,4 +1,4 @@
-package upp.project.services;
+package upp.project.services.camunda.magazine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +14,12 @@ import upp.project.model.Magazine;
 import upp.project.model.PaymentType;
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
+import upp.project.services.MagazineService;
+import upp.project.services.ScientificAreaService;
+import upp.project.services.UserService;
 
 @Service
-public class SaveMagazineService implements JavaDelegate{
+public class SaveMagazineService implements JavaDelegate {
 	
 	@Autowired
 	MagazineService magazineService;
@@ -30,9 +33,9 @@ public class SaveMagazineService implements JavaDelegate{
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Saving the magazine");
+		System.out.println("MAG | saving the magazine");
 						
-		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("newMagazineFormValues");
+		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("formData");
 		
 		//create and save a new magazine
 		Magazine newMagazine = createMagazine(formValues);			
@@ -44,15 +47,14 @@ public class SaveMagazineService implements JavaDelegate{
 	}
 	
 	private Magazine createMagazine(List<FormValueDTO> formValues) {
-		HashMap<String, String> valuesMap = new HashMap<String,String>();
+		HashMap<String, Object> valuesMap = new HashMap<String, Object>();
 		
 		for(FormValueDTO value : formValues) {
 			valuesMap.put(value.getId(), value.getValue());
 		}
 		
 		//create the magazine
-		Magazine magazine = new Magazine(valuesMap.get("form_name"), valuesMap.get("form_issn"));
-		
+		Magazine magazine = new Magazine((String)valuesMap.get("form_name"), (String)valuesMap.get("form_issn"));
 		
 		//set payment type
 		if(valuesMap.get("form_payment").equals("authors")) {
@@ -63,8 +65,7 @@ public class SaveMagazineService implements JavaDelegate{
 		}
 		
 		//set chosen scientific areas
-		String [] areas = valuesMap.get("form_scientific_area").split(",");
-		
+		List<String> areas = (List<String>) valuesMap.get("form_scientific_area");		
 		for(String area : areas) {
 			magazine.getScientificAreas().add(scientificAreasService.findByName(area));
 		}

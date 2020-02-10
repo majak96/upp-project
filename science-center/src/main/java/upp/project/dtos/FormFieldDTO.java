@@ -21,6 +21,8 @@ public class FormFieldDTO {
 	
 	private Boolean readonly;
 	
+	private Boolean textarea;
+	
 	private Integer minNumber;
 	
 	private Object value;
@@ -32,6 +34,7 @@ public class FormFieldDTO {
 		this.password = false;
 		this.multiple = false;
 		this.readonly = false;
+		this.textarea = false;
 	}
 
 	public FormFieldDTO(String id, String label, String type) {
@@ -42,6 +45,7 @@ public class FormFieldDTO {
 		this.password = false;
 		this.multiple = false;
 		this.readonly = false;
+		this.textarea = false;
 	}
 
 	public String getId() {
@@ -130,6 +134,14 @@ public class FormFieldDTO {
 
 	public void setMinNumber(Integer minNumber) {
 		this.minNumber = minNumber;
+	}
+
+	public Boolean getTextarea() {
+		return textarea;
+	}
+
+	public void setTextarea(Boolean textarea) {
+		this.textarea = textarea;
 	}
 
 }

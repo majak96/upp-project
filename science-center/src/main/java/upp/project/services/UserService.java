@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import upp.project.model.Authority;
+import upp.project.model.Magazine;
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
 import upp.project.model.ScientificArea;
@@ -43,8 +44,24 @@ public class UserService {
 		return userRepository.findByAuthority(authority);
 	}
 	
-	public List<RegisteredUser> findByScientificAreas(List<ScientificArea> scientificAreas, Role role) {
+	public List<RegisteredUser> findByScientificAreas(List<ScientificArea> scientificAreas, Role role, RegisteredUser user) {
 		
-		return userRepository.findByScientificAreas(scientificAreas, role, true);
+		return userRepository.findByScientificAreas(scientificAreas, role, true, user);
 	}
+	
+	public List<RegisteredUser> findByConfirmed() {
+		
+		return userRepository.findByConfirmed(true);
+	}
+	
+	public List<RegisteredUser> findMagazineEditorsForScientificArea(Magazine magazine, ScientificArea scientificArea){
+		
+		return userRepository.findMagazineEditorsForScientificArea(magazine, scientificArea, Role.ROLE_EDITOR);
+	}
+	
+	public List<RegisteredUser> findMagazineReviewersForScientificArea(Magazine magazine, ScientificArea scientificArea){
+		
+		return userRepository.findMagazineReviewersForScientificArea(magazine, scientificArea, Role.ROLE_REVIEWER);
+	}
+	
 }

@@ -1,6 +1,7 @@
 package upp.project.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -10,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+
+import upp.project.dtos.UserDTO;
 
 @Entity
 public class RegisteredUser {
@@ -68,13 +71,26 @@ public class RegisteredUser {
 		this.confirmed = false;
 	}
 	
+	public RegisteredUser(UserDTO userDTO, Authority authority, List<ScientificArea> scientificAreas) {
+		this.firstName = userDTO.getFirstName();
+		this.lastName = userDTO.getLastName();
+		this.city = userDTO.getCity();
+		this.country = userDTO.getCountry();
+		this.title = userDTO.getTitle();
+		this.email = userDTO.getEmail();
+		this.username = userDTO.getUsername();
+		this.password = userDTO.getPassword();
+		this.confirmed = true;
+		this.authority = authority;
+		
+		for(ScientificArea area : scientificAreas) {
+			this.scientificAreas.add(area);
+		}
+	}
+	
 	@Override
 	public String toString() {
-		return "RegisteredUser [ \n"
-				+ "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", \n"
-				+ "city=" + city + ", country=" + country + ", title=" + title + ", userType=" + authority.getRole().name() + "\n" 
-				+ ", email=" + email + ", username=" + username+ ", password=" + password  + "\n"
-				+ ", scientificAreas=" + scientificAreas.toString() + "]";
+		return id + " | " + firstName + " " + lastName + " | " + username;
 	}
 
 	public Long getId() {
@@ -172,4 +188,6 @@ public class RegisteredUser {
 	public void setAuthority(Authority authority) {
 		this.authority = authority;
 	}
+	
+	
 }

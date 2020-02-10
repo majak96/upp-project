@@ -1,12 +1,16 @@
 package upp.project.security;
 
+import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
+
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.camunda.bpm.engine.IdentityService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,10 +19,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import com.auth0.jwt.JWT;
 
+import upp.project.model.Authority;
 import upp.project.model.RegisteredUser;
 import upp.project.repositories.UserRepository;
-
-import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
+import upp.project.services.UserService;
+import upp.project.utils.SpringContext;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
 
@@ -44,7 +49,18 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter{
         //if header is present, try grab user principal from database and perform authorization
         Authentication authentication = getUsernamePasswordAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        
+        IdentityService identityService = SpringContext.getBean(IdentityService.class);
+        UserService userService = SpringContext.getBean(UserService.class);
+        
+        //log in to camunda
+        String username = authentication.getName();
+        Authority authority = userService.findByUsername(username).getAuthority();
+        String role = authority.getRole().getCamundaGroupName();
+        	
+		identityService.setAuthenticatedUserId(username);
+		identityService.setAuthentication(username, Collections.singletonList(role));
+		
         //continue filter execution
         chain.doFilter(request, response);
     }

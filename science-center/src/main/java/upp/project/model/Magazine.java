@@ -126,5 +126,10 @@ public class Magazine {
 	public void setEditors(Set<RegisteredUser> editors) {
 		this.editors = editors;
 	}
+	
+	@Override
+	public String toString() {
+		return id + " | " + name;
+	}
 
 }

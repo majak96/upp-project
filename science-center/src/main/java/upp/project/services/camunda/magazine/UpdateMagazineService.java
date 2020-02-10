@@ -1,4 +1,4 @@
-package upp.project.services;
+package upp.project.services.camunda.magazine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +14,9 @@ import upp.project.model.Magazine;
 import upp.project.model.PaymentType;
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
+import upp.project.services.MagazineService;
+import upp.project.services.ScientificAreaService;
+import upp.project.services.UserService;
 
 @Service
 public class UpdateMagazineService implements JavaDelegate{
@@ -30,11 +33,11 @@ public class UpdateMagazineService implements JavaDelegate{
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Update magazine");
+		System.out.println("MAG | updating the magazine");
 		
 		Long magazineId = (Long) execution.getVariable("magazineId");
 
-		Magazine magazine = magazineService.findById(magazineId);;
+		Magazine magazine = magazineService.findById(magazineId);
 						
 		if(magazine != null) {
 			String name = (String) execution.getVariable("form_name");

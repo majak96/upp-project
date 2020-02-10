@@ -1,10 +1,10 @@
 package upp.project.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +12,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import upp.project.dtos.FormDTO;
 import upp.project.dtos.FormFieldDTO;
 import upp.project.dtos.FormValueDTO;
-import upp.project.dtos.SubmitResponseDTO;
 import upp.project.model.RegisteredUser;
 import upp.project.services.ProcessService;
 import upp.project.services.UserService;
@@ -44,16 +40,20 @@ public class RegistrationController {
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	IdentityService identityService;
+	
 	@GetMapping("/")
 	public ResponseEntity<?> startRegistrationProcess() {
 		
-		System.out.println("Starting registration process.");
+		System.out.println("REG | starting registration process.");
+		
+		identityService.setAuthenticatedUserId("guest");
+		identityService.setAuthentication("guest", Collections.singletonList("guests"));
 		
 		//start registration process and get the first task
 		Task firstTask = processService.startProcess("user_registration"); 
-		
-		processService.setProcessVariable(firstTask.getProcessInstanceId(), "process_initiator", "guest");
-		
+				
 		//get fields for the user task
 		List<FormFieldDTO> frontendFields = processService.getFrontendFields(firstTask.getId());
 		
@@ -61,48 +61,14 @@ public class RegistrationController {
 		
 		return ResponseEntity.ok(form);
 	}
-	
-	@PostMapping("/{taskId}")
-	public ResponseEntity<?> submitRegistrationForm(@RequestBody List<FormValueDTO> formValues, @PathVariable String taskId) {
 		
-		System.out.println("Submiting registration form field values.");
-		
-		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();	
-		String processInstanceId = task.getProcessInstanceId();
-		
-		//save form values as a process variable
-		processService.setProcessVariable(processInstanceId, "newUserFormValues", formValues);
-		
-		for(FormValueDTO formValue : formValues) {
-			if(formValue.getId().equals("form_scientific_area")) {	
-				formValue.setValue(null);
-			}
-		}
-
-		//submit form fields
-		try {
-			processService.submitFormFields(taskId, formValues);
-		}
-		catch(Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		
-		//find the next task
-		Task nextTask = taskService.createTaskQuery().processInstanceId(processInstanceId).taskPriority(1).singleResult();
-		
-		//return task id of the next task if it exists
-		if(nextTask != null) {
-			return ResponseEntity.ok(new SubmitResponseDTO(nextTask.getId()));
-		}
-		else {
-			return ResponseEntity.ok(new SubmitResponseDTO());
-		}
-	}
-	
 	@GetMapping(value = "/confirm")
 	public ResponseEntity<?> confirmRegistration(@RequestParam String username, @RequestParam String processInstanceId) {
 		
-		System.out.println("Confirming registration");
+		System.out.println("REG | confirming registration");
+		
+		identityService.setAuthenticatedUserId("guest");
+		identityService.setAuthentication("guest", Collections.singletonList("guests"));
 		
 		String hashedValue = (String) processService.getProcessVariable(processInstanceId, "hashedValue");		
 		boolean result = BCrypt.checkpw(username, hashedValue);
@@ -131,7 +97,7 @@ public class RegistrationController {
 		String taskId = processService.getNextTaskId(processInstanceId);
 		
 		List<FormValueDTO> formValues= new ArrayList<FormValueDTO>();
-		formValues.add(new FormValueDTO("email_confirm", "true"));
+		formValues.add(new FormValueDTO("email_confirm", true));
 		
 		//submits the user task for email confirmation
 		try {

@@ -41,10 +41,10 @@ public class ScientificArea {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "ScientificArea [name=" + name + "]";
+		return id + " | " + name;
 	}
 
 }

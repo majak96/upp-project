@@ -1,22 +1,22 @@
-package upp.project.services;
+package upp.project.services.camunda.registration;
 
 import java.util.HashMap;
 import java.util.List;
 
-import javax.mail.internet.MimeMessage;
-
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import upp.project.dtos.FormValueDTO;
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
+import upp.project.services.AuthorityService;
+import upp.project.services.EmailService;
+import upp.project.services.ScientificAreaService;
+import upp.project.services.UserService;
 
 @Service
 public class RegistrationService implements JavaDelegate{
@@ -33,18 +33,15 @@ public class RegistrationService implements JavaDelegate{
 	@Autowired
 	ScientificAreaService scientificAreaService;
 	
-	@Autowired
-    private JavaMailSender javaMailSender;
-	
-	@Autowired
-	private ProcessService processService;
+	@Autowired 
+	EmailService emailService;
 	
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Saving registration and sending mail");
+		System.out.println("REG | saving registration data and sending a confirmation email");
 						
-		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("newUserFormValues");
+		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("formData");
 		
 		//create and save a new user
 		RegisteredUser newUser = createUser(formValues);			
@@ -64,22 +61,22 @@ public class RegistrationService implements JavaDelegate{
 	}
 	
 	private RegisteredUser createUser(List<FormValueDTO> formValues) {
-		HashMap<String, String> valuesMap = new HashMap<String,String>();
+		HashMap<String, Object> valuesMap = new HashMap<String, Object>();
 		
 		for(FormValueDTO value : formValues) {
 			valuesMap.put(value.getId(), value.getValue());
 		}
 		
 		//create the user
-		RegisteredUser user = new RegisteredUser(valuesMap.get("form_first_name"), valuesMap.get("form_last_name"), valuesMap.get("form_city"), valuesMap.get("form_country"), 
-				valuesMap.get("form_title"), valuesMap.get("form_email"), valuesMap.get("form_username"), passwordEncoder.encode(valuesMap.get("form_password")));
+		RegisteredUser user = new RegisteredUser((String) valuesMap.get("form_first_name"), (String) valuesMap.get("form_last_name"), (String) valuesMap.get("form_city"), 
+												 (String) valuesMap.get("form_country"), (String) valuesMap.get("form_title"), (String) valuesMap.get("form_email"), 
+												 (String) valuesMap.get("form_username"), passwordEncoder.encode((String) valuesMap.get("form_password")));
 
-		//set user type - all users are regular users in the beginning
-		user.setAuthority(authorityService.findByRole(Role.ROLE_USER));
+		//set user type - all users are regular users (authors) in the beginning
+		user.setAuthority(authorityService.findByRole(Role.ROLE_AUTHOR));
 		
 		//set chosen scientific areas
-		String [] areas = valuesMap.get("form_scientific_area").split(",");
-		
+		List<String> areas = (List<String>) valuesMap.get("form_scientific_area");		
 		for(String area : areas) {
 			user.getScientificAreas().add(scientificAreaService.findByName(area));
 		}
@@ -89,29 +86,19 @@ public class RegistrationService implements JavaDelegate{
 	
 	private void sendConfirmationEmail(RegisteredUser user, String processInstanceId) { 
 		
-		String confirmationLinkBase = "http://localhost:9997/registration/confirm";		
+		String confirmationLinkBase = "https://localhost:9997/registration/confirm";		
 		String confirmationLink = confirmationLinkBase + "?username=" + user.getUsername() + "&processInstanceId=" + processInstanceId;
-				
-		String messageText = "<div style=\"text-center\">"
-						   + "<h2>"
-						   + "<a href=\"" + confirmationLink + "\">Click here to confirm your account</a>"
-						   + "</h2>"
-						   + "</div>";
 		
-        MimeMessage mail = javaMailSender.createMimeMessage();
-
-		try {          		
-	        MimeMessageHelper helper = new MimeMessageHelper(mail, true);
-	        
-	        helper.setTo(user.getEmail());
-	        helper.setSubject("ScienceCenter Account Confirmation");
-	        helper.setText(messageText, true);
-	        	        
-            javaMailSender.send(mail);
-		}
-		catch(Exception e) {
-			
-		}
+		String messageText = "<div>"
+				   + "<p>"
+				   + "Dear " + user.getFirstName() + " " + user.getLastName() + ", <br><br>"
+				   + "Please click <a href=\"" + confirmationLink + "\">here</a> to confirm your email adress. <br><br>"
+				   + "Best regards, <br>"
+				   + "ScienceCenter"
+				   + "<p>"
+				   + "</div>";
+		
+		emailService.sendEmail(user.getEmail(), "ScienceCenter Email Confirmation", messageText);
     }
 
 }

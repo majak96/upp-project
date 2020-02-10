@@ -11,7 +11,7 @@ import { SubmitResponse } from '../model/submitresponse';
 })
 export class MagazineService {
 
-  baseUrl = 'http://localhost:9997/magazine/';
+  baseUrl = 'https://localhost:9997/magazine/';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' })

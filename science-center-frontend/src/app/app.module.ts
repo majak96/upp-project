@@ -16,6 +16,9 @@ import { NewMagazineComponent } from './new-magazine/new-magazine.component';
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskComponent } from './task/task.component';
 import { MagazineListComponent } from './magazine-list/magazine-list.component';
+import { UsersPaneComponent } from './users-pane/users-pane.component';
+import { NewUserComponent } from './new-user/new-user.component';
+import { NewPaperComponent } from './new-paper/new-paper.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +34,9 @@ import { MagazineListComponent } from './magazine-list/magazine-list.component';
     TaskListComponent,
     TaskComponent,
     MagazineListComponent,
+    UsersPaneComponent,
+    NewUserComponent,
+    NewPaperComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,60 @@
+<div style="margin-top: 100px; margin-bottom: 10px;" class="container">
+  <div class="row">
+    <div class="col-8 m-auto">
+        <div class="reg-title">
+            <h2>Add a new user</h2>
+            <hr>
+        </div>
+
+        <form id="form" [formGroup]="userForm" (ngSubmit) = "onSubmit()">
+            <div class="form-group">
+                <label for="role" class="form-control-label">Role</label>
+                <select formControlName="role" class="form-control" id="role">
+                    <option>Administrator</option>
+                    <option>Editor</option>
+                </select>
+            </div>
+            <div class="form-label-group">
+                <label for="firstName" class="form-control-label">First name</label>
+                <input type="text" id="firstName" class="form-control" placeholder="First name" formControlName="firstName">
+            </div>    
+            <div class="form-label-group">
+                <label for="lastName" class="form-control-label">Last name</label>
+                <input type="text" id="lastName" class="form-control" placeholder="Last name" formControlName="lastName">
+            </div>    
+            <div class="form-label-group">
+                <label for="city" class="form-control-label">City</label>
+                <input type="text" id="city" class="form-control" placeholder="City" formControlName="city">
+            </div>    
+            <div class="form-label-group">
+                <label for="country" class="form-control-label">Country</label>
+                <input type="text" id="country" class="form-control" placeholder="Country" formControlName="country">
+            </div>
+            <div class="form-label-group">
+                <label for="title" class="form-control-label">Title</label>
+                <input type="text" id="title" class="form-control" placeholder="Title" formControlName="title">
+            </div>
+            <div class="form-label-group">
+                <label for="email" class="form-control-label">Email</label>
+                <input type="email" id="email" class="form-control" placeholder="Email" formControlName="email">
+            </div>  
+            <div class="form-label-group">
+                <label for="username" class="form-control-label">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="Username" formControlName="username">
+            </div>  
+            <div class="form-label-group">
+                <label for="password" class="form-control-label">Password</label>
+                <input type="password" id="title" class="form-control" placeholder="Password" formControlName="password">
+            </div>
+            <div class="form-group">
+                <label for="scientificAreas" class="form-control-label">Scientific areas</label>
+                <select multiple formControlName="scientificAreas" class="form-control" id="scientificAreas">
+                    <option *ngFor="let area of scientificAreas" [ngValue]=area.id>{{area.name}}</option>
+                </select>
+            </div>
+
+            <button style="margin-top: 10px;" class="btn btn-dark" type="submit" form="form" [disabled]="!validateUserForm()">Confirm</button>
+        </form>
+    </div>
+  </div>
+</div>

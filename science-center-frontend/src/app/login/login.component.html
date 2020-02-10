@@ -1,11 +1,11 @@
-<div style="margin-top: 80px; margin-bottom: 10px;" class="container">
+<div style="margin-top: 100px; margin-bottom: 10px;" class="container">
   <div class="row">
     <div class="col-6 m-auto">
       <div class="reg-title">
         <h2>Login</h2>
         <hr>
       </div>
-      <form id="loginForm" [formGroup] = "loginForm" (ngSubmit) = "onSubmit()">
+      <form id="loginForm" [formGroup]="loginForm" (ngSubmit) = "onSubmit()">
         <div class="form-label-group">
           <label for="inputUsername" class="form-control-label">Username</label>
           <input type="text" id="inputUsername" class="form-control" placeholder="Username" formControlName="username">
@@ -14,7 +14,7 @@
           <label for="inputPassword" class="form-control-label">Password</label>
           <input type="password" id="inputPassword" class="form-control" placeholder="Password" formControlName="password">
         </div>
-        <button style="margin-top: 10px;" class="btn btn-dark" type="submit" form="registrationForm" [disabled]="!loginForm.valid">Log in</button>
+        <button style="margin-top: 10px;" class="btn btn-dark" type="submit" form="loginForm">Log in</button>
       </form>
     </div>
   </div>

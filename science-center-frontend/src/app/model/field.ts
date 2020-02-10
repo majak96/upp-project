@@ -7,6 +7,7 @@ export interface Field {
   multiple: boolean;
   password: boolean;
   readonly: boolean;
+  textarea: boolean;
   value: any;
   minNumber: number;
   values: Map<string, string>;

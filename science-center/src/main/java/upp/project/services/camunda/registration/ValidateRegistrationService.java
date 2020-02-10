@@ -1,6 +1,5 @@
-package upp.project.services;
+package upp.project.services.camunda.registration;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import upp.project.dtos.FormValueDTO;
 import upp.project.model.RegisteredUser;
+import upp.project.services.UserService;
 
 @Service
 public class ValidateRegistrationService implements JavaDelegate{
@@ -22,32 +22,35 @@ public class ValidateRegistrationService implements JavaDelegate{
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Validation of registration data");
+		System.out.println("REG | validation of registration data");
 		
 		boolean validation = true; 
 		
-		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("newUserFormValues");
-		
-		HashMap<String, String> valuesMap = new HashMap<String,String>();
-		
-		for(FormValueDTO value : formValues) {
-			valuesMap.put(value.getId(), value.getValue());
-		}
-		
+		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("formData");
+				
 		for(FormValueDTO formValue : formValues) {
-			if (formValue.getId().equals("form_email")) {				
-				if(!validateEmailAddress(formValue.getValue())) {
+			// check for required fields
+			if(!formValue.getId().equals("form_title") && formValue.getValue() == null) {
+				validation = false;
+				break;
+			}
+			//check specific fields
+			else if (formValue.getId().equals("form_email")) {				
+				if(!validateEmailAddress((String) formValue.getValue())) {
 					validation = false;
+					break;
 				}	
 			}
 			else if(formValue.getId().equals("form_username")) {
-				if(!validateUsername(formValue.getValue())) {
+				if(!validateUsername((String) formValue.getValue())) {
 					validation = false;
+					break;
 				}
 			}
 			else if(formValue.getId().equals("form_scientific_area")) {	
-				if(!validateScientificAreas(formValue.getValue())) {
+				if(!validateScientificAreas((List<String>) formValue.getValue())) {
 					validation = false;
+					break;
 				}
 			}
 		}
@@ -85,10 +88,9 @@ public class ValidateRegistrationService implements JavaDelegate{
 		return false;
 	}
 	
-	private boolean validateScientificAreas(String scientificAreas) {		
-		String[] scientificAreasArray = scientificAreas.split(",");
+	private boolean validateScientificAreas(List<String> scientificAreas) {		
 		
-		if(scientificAreasArray.length >= 1) {
+		if(scientificAreas.size() >= 1) {
 			return true;
 		}
 		

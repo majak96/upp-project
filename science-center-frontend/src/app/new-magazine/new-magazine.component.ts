@@ -20,8 +20,6 @@ export class NewMagazineComponent implements OnInit {
   nextTaskId: string;
   processId: string;
 
-  firstForm = true;
-
   constructor(private magazineService: MagazineService,
               private taskService: TaskService,
               private router: Router) { }
@@ -36,22 +34,6 @@ export class NewMagazineComponent implements OnInit {
     this.magazineService.startNewMagazineProcess().subscribe(
       data => {
         console.log('Started the new magazine process.');
-        this.taskId = data.taskId;
-        this.fieldList = data.fieldList;
-        this.processId = data.processId;
-
-        this.magazineForm = this.createFormGroup(data.fieldList);
-      },
-      error => {
-        alert('An error occured.');
-      }
-    );
-  }
-
-  // gets the list of fields for the form for editors and reviewers
-  initializeUsersForm()  {
-    this.taskService.getTask(this.nextTaskId).subscribe(
-      data => {
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
         this.processId = data.processId;
@@ -91,52 +73,70 @@ export class NewMagazineComponent implements OnInit {
     return new FormGroup(group);
   }
 
-  // submits the data
-  onSubmit() {
+  getNextTask() {
+    this.taskService.getTask(this.nextTaskId).subscribe(
+      data => {
+        this.taskId = data.taskId;
+        this.fieldList = data.fieldList;
 
+        this.magazineForm = this.createFormGroup(data.fieldList);
+      },
+      error => {
+        alert('An error occured.');
+      }
+    );
+  }
+
+  // submits the data from the form
+  onSubmit() {
+    // create a list of objects to submit
     const valuesList = new Array<Value>();
 
     this.fieldList.forEach(field => {
-      valuesList.push({id: field.id, value: this.magazineForm.value[field.id].toString()});
+      if (field.type === 'enum' && field.multiple === false) {
+        valuesList.push({id: field.id, value: this.magazineForm.value[field.id].toString()});
+      } else if (field.type === 'enum' && field.multiple === true) {
+        console.log(field.id + this.magazineForm.value[field.id].length);
+        if (this.magazineForm.value[field.id].length >= 1) {
+          valuesList.push({id: field.id, value: this.magazineForm.value[field.id]});
+        } else {
+          valuesList.push({id: field.id, value: []});
+        }
+      } else {
+        valuesList.push({id: field.id, value: this.magazineForm.value[field.id]});
+      }
     });
 
-    // submits the data for a new magazine
-    if (this.firstForm) {
-      this.magazineService.submitMagazineForm(valuesList, this.taskId).subscribe(
-        data => {
-          alert('You have successfully added a new magazine!');
+    console.log(valuesList);
 
-          this.firstForm = false;
-          this.nextTaskId = data.nextTask;
+    // submit the data
+    this.taskService.submitFormTask(valuesList, this.taskId).subscribe(
+      data => {
+        this.nextTaskId = data.nextTask;
 
-          this.initializeUsersForm();
-        },
-        error => {
-          if (error.status === 400) {
-            alert(error.error);
+        if (this.nextTaskId !== null) {
+          // invalid data
+          if (data.valid === false) {
+            alert('The data you entered is not valid. Please try again!');
+            this.getNextTask();
           } else {
-            alert('An error occured! Please try again.');
+            alert('Form successfully submited.');
+            this.getNextTask();
           }
-        }
-      );
-    // submits the data for the reviewers and editors
-    } else {
-      this.magazineService.submitUsersForm(valuesList, this.taskId).subscribe(
-        data => {
-          alert('You have successfully added reviewers and editors!');
 
+        } else {
+          alert('Successfully created a new magazine.');
           this.router.navigateByUrl('');
-        },
-        error => {
-          if (error.status === 400) {
-            alert(error.error);
-          } else {
-            alert('An error occured! Please try again.');
-          }
         }
-      );
-    }
-
+      },
+      error => {
+        if (error.status === 400) {
+          alert(error.error);
+        } else {
+          alert('An error occured! Please try again.');
+        }
+      }
+    );
   }
 
     // validates form

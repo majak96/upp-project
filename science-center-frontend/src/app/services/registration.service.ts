@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 })
 export class RegistrationService {
 
-  baseUrl = 'http://localhost:9997/registration/';
+  baseUrl = 'https://localhost:9997/registration/';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' })

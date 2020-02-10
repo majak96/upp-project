@@ -13,6 +13,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { EmailConfirmationComponent } from './email-confirmation/email-confirmation.component';
 import { EmailConfirmationErrorComponent } from './email-confirmation-error/email-confirmation-error.component';
 import { RoleGuardService } from './authentication/role-guard.service';
+import { UsersPaneComponent } from './users-pane/users-pane.component';
+import { NewUserComponent } from './new-user/new-user.component';
+import { NewPaperComponent } from './new-paper/new-paper.component';
 
 
 const routes: Routes = [
@@ -41,6 +44,24 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
+    path: 'users',
+    component: UsersPaneComponent,
+    canActivate: [RoleGuardService],
+    data: {role: 'ROLE_ADMINISTRATOR'}
+  },
+  {
+    path: 'user/new',
+    component: NewUserComponent,
+    canActivate: [RoleGuardService],
+    data: {role: 'ROLE_ADMINISTRATOR'}
+  },
+  {
+    path: 'paper/new',
+    component: NewPaperComponent,
+    canActivate: [RoleGuardService],
+    data: {role: 'ROLE_AUTHOR'}
+  },
+  {
     path: 'task/:id',
     component: TaskComponent,
     canActivate: [AuthGuardService]
@@ -49,7 +70,7 @@ const routes: Routes = [
     path: 'magazine/new',
     component: NewMagazineComponent,
     canActivate: [RoleGuardService],
-    data: { role: 'ROLE_EDITOR'}
+    data: {role: 'ROLE_EDITOR'}
   },
   {
     path: 'emailconfirmation',

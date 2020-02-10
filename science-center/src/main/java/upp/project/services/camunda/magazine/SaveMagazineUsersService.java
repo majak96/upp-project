@@ -1,4 +1,4 @@
-package upp.project.services;
+package upp.project.services.camunda.magazine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +12,9 @@ import upp.project.dtos.FormValueDTO;
 import upp.project.model.Magazine;
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
+import upp.project.services.MagazineService;
+import upp.project.services.ScientificAreaService;
+import upp.project.services.UserService;
 
 @Service
 public class SaveMagazineUsersService implements JavaDelegate{
@@ -28,23 +31,22 @@ public class SaveMagazineUsersService implements JavaDelegate{
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		System.out.println("Save editors and reviewers for a magazine");
+		System.out.println("MAG | saving editors and reviewers for a magazine");
 						
-		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("newMagazineUsersFormValues");
+		List<FormValueDTO> formValues = (List<FormValueDTO>) execution.getVariable("formData");
 		
-		HashMap<String, String> valuesMap = new HashMap<String,String>();
+		HashMap<String, Object> valuesMap = new HashMap<String,Object>();
 		
 		for(FormValueDTO value : formValues) {
 			valuesMap.put(value.getId(), value.getValue());
 		}
 		
-		Long magazineId = (Long) execution.getVariable("magazineId");
-		
+		Long magazineId = (Long) execution.getVariable("magazineId");		
 		Magazine magazine = magazineService.findById(magazineId);
 		
 		if(magazine != null) {
-			String[] reviewers = valuesMap.get("form_reviewers").split(",");
-			String[] editors = valuesMap.get("form_editors").split(",");
+			List<String> reviewers = ((List<String>) valuesMap.get("form_reviewers"));
+			List<String> editors = ((List<String>) valuesMap.get("form_editors"));
 			
 			//add reviewers
 			for(String reviewer : reviewers) {
