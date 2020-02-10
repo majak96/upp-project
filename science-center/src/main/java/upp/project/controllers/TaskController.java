@@ -7,11 +7,9 @@ import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,7 +74,7 @@ public class TaskController {
 		
 		//get fields for the user task
 		List<FormFieldDTO> fieldList = processService.getFrontendFields(taskId);
-		
+				
 		FormDTO form = new FormDTO(task.getId(), task.getProcessInstanceId(), task.getName(), fieldList);
 		
 		return ResponseEntity.ok(form);
@@ -118,6 +116,7 @@ public class TaskController {
 		}
 		
 		Object redirectLink = processService.getProcessVariable(processInstanceId, "redirect_link");
+		System.out.println("LINK HERE:" + redirectLink);
 		if(redirectLink != null) {
 			processService.setProcessVariable(processInstanceId, "redirect_link", null);
 		}
@@ -132,7 +131,10 @@ public class TaskController {
 		if(nextTask != null && valid != null) {
 			return ResponseEntity.ok(new SubmitResponseDTO(nextTask.getId(), valid, redirectLink));
 		}
-		else {
+		else if(redirectLink != null) {
+			return ResponseEntity.ok(new SubmitResponseDTO(redirectLink));
+		}		
+		else{
 			return ResponseEntity.ok(new SubmitResponseDTO());
 		}
 	}

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.camunda.bpm.engine.IdentityService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import upp.project.dtos.FormDTO;
 import upp.project.dtos.FormFieldDTO;
 import upp.project.dtos.FormValueDTO;
+import upp.project.dtos.SubmitResponseDTO;
 import upp.project.model.RegisteredUser;
 import upp.project.services.ProcessService;
 import upp.project.services.UserService;
@@ -42,6 +44,9 @@ public class RegistrationController {
 	
 	@Autowired
 	IdentityService identityService;
+	
+	@Autowired
+	RuntimeService runtimeService;
 	
 	@GetMapping("/")
 	public ResponseEntity<?> startRegistrationProcess() {
@@ -70,12 +75,21 @@ public class RegistrationController {
 		identityService.setAuthenticatedUserId("guest");
 		identityService.setAuthentication("guest", Collections.singletonList("guests"));
 		
+		if(!processService.processInstanceExists(processInstanceId)) {
+			HttpHeaders headersRedirect = new HttpHeaders();
+			headersRedirect.add("Location", "https://localhost:4206/emailconfirmationerror");
+			headersRedirect.add("Access-Control-Allow-Origin", "*");
+			
+			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
+		}
+		
+		
 		String hashedValue = (String) processService.getProcessVariable(processInstanceId, "hashedValue");		
 		boolean result = BCrypt.checkpw(username, hashedValue);
 		
 		if(!result) {
 			HttpHeaders headersRedirect = new HttpHeaders();
-			headersRedirect.add("Location", "https://localhost:4200/emailconfirmationerror");
+			headersRedirect.add("Location", "https://localhost:4206/emailconfirmationerror");
 			headersRedirect.add("Access-Control-Allow-Origin", "*");
 			
 			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
@@ -87,7 +101,7 @@ public class RegistrationController {
 		//redirecting to the error page
 		if(user == null || user.isConfirmed()) {
 			HttpHeaders headersRedirect = new HttpHeaders();
-			headersRedirect.add("Location", "https://localhost:4200/emailconfirmationerror");
+			headersRedirect.add("Location", "https://localhost:4206/emailconfirmationerror");
 			headersRedirect.add("Access-Control-Allow-Origin", "*");
 			
 			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
@@ -106,7 +120,7 @@ public class RegistrationController {
 		catch(Exception e) {
 			//redirecting to the error page
 			HttpHeaders headersRedirect = new HttpHeaders();
-			headersRedirect.add("Location", "http://localhost:4200/emailconfirmationerror");
+			headersRedirect.add("Location", "http://localhost:4206/emailconfirmationerror");
 			headersRedirect.add("Access-Control-Allow-Origin", "*");
 			
 			return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);
@@ -114,7 +128,7 @@ public class RegistrationController {
 			
 		//redirecting to a success page 
 		HttpHeaders headersRedirect = new HttpHeaders();
-		headersRedirect.add("Location", "http://localhost:4200/emailconfirmation");
+		headersRedirect.add("Location", "http://localhost:4206/emailconfirmation");
 		headersRedirect.add("Access-Control-Allow-Origin", "*");
 		
 		return new ResponseEntity<byte[]>(null, headersRedirect, HttpStatus.FOUND);

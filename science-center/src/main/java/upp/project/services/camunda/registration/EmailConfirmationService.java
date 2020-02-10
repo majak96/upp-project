@@ -39,7 +39,7 @@ public class EmailConfirmationService implements JavaDelegate{
 			
 			try {
 				identityService.saveUser(camundaUser);
-				identityService.createMembership(user.getUsername(), "registeredusers");
+				identityService.createMembership(user.getUsername(), "authors");
 			}
 			catch(Exception e) {
 				throw e;

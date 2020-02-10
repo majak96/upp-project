@@ -12,6 +12,10 @@ public class SubmitResponseDTO {
 		
 	}
 	
+	public SubmitResponseDTO(Object redirectLink) {
+		this.redirectLink = redirectLink;
+	}
+	
 	public SubmitResponseDTO(String nextTask){
 		this.nextTask = nextTask;
 	}

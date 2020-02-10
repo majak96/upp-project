@@ -12,12 +12,18 @@
             <input class="form-check-input" [formControlName]="field.id" [id]="field.id" type="checkbox">
             <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
           </div>
-          <div *ngIf="field.type=='string'" class="form-label-group">
+          <div *ngIf="field.type==='string' && field.download === true">
+            <a class="btn btn-secondary" [href]="getSantizeUrl(downloadLink)">Download</a>
+          </div>
+          <div *ngIf="field.type==='string' && field.download === false" class="form-label-group">
             <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>
-            <input *ngIf="!field.email && !field.password && !field.textarea" class="form-control" [formControlName]="field.id" [id]="field.id" type="text">
+            <input *ngIf="!field.email && !field.upload && !field.password && !field.textarea" class="form-control" [formControlName]="field.id" [id]="field.id" type="text">
             <input *ngIf="field.email" class="form-control" [formControlName]="field.id" [id]="field.id" type="email">
             <input *ngIf="field.password" class="form-control" [formControlName]="field.id" [id]="field.id" type="password">
             <textarea rows="6" *ngIf="field.textarea" class="form-control" [formControlName]="field.id" [id]="field.id"></textarea>
+            <div *ngIf="field.upload">
+              <input class="form-control" [formControlName]="field.id" [id]="field.id" type="file" (change)="selectFile($event)">
+            </div>
           </div>
           <div *ngIf="field.type=='long'" class="form-label-group">
               <label [attr.for]="field.id" class="form-control-label">{{field.label}}</label>

@@ -8,6 +8,8 @@ export interface Field {
   password: boolean;
   readonly: boolean;
   textarea: boolean;
+  upload: boolean;
+  download: boolean;
   value: any;
   minNumber: number;
   values: Map<string, string>;

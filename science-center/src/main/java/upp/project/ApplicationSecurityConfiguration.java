@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -52,6 +54,8 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
 			.addFilter(new JwtAuthenticationFilter(authenticationManager()))
 			.addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
 			.authorizeRequests()
+			.antMatchers(HttpMethod.GET, "/", "/auth/", "/webjars/", "/*.html", "/favicon.ico", "//*.html",
+		            "//*.css", "//*.js","//*.pdf").permitAll()
 			.antMatchers("/login").permitAll()
 			.antMatchers("/registration/**").permitAll()
 			.antMatchers("/magazine/form/**").hasRole("EDITOR")
@@ -85,6 +89,21 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+    }
+    
+    @Override
+    public void configure(WebSecurity web) throws Exception {        
+        web.ignoring().antMatchers(
+                HttpMethod.GET,
+                "/",
+                "/webjars/**",
+                "/*.html",
+                "/favicon.ico",
+                "/**/*.html",
+                "/**/*.css",
+                "/**/*.js",
+                "/**/*.pdf"
+            );
     }
 	
 }

@@ -19,12 +19,14 @@ export class NewMagazineComponent implements OnInit {
   taskId: string;
   nextTaskId: string;
   processId: string;
+  taskName: string;
 
   constructor(private magazineService: MagazineService,
               private taskService: TaskService,
               private router: Router) { }
 
   ngOnInit() {
+    this.taskName = 'Add a new magazine';
     this.initializeNewMagazineForm();
   }
 
@@ -37,6 +39,8 @@ export class NewMagazineComponent implements OnInit {
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
         this.processId = data.processId;
+
+        console.log(data.fieldList);
 
         this.magazineForm = this.createFormGroup(data.fieldList);
       },
@@ -58,8 +62,12 @@ export class NewMagazineComponent implements OnInit {
         validators.push(Validators.required);
       }
 
+      if (field.type === 'long' && field.minNumber != null) {
+        validators.push(Validators.min(field.minNumber));
+      }
+
       if (field.type === 'enum' && !field.multiple) {
-        group[field.id] = new FormControl(Object.keys(field.values)[1], validators);
+        group[field.id] = new FormControl(Object.keys(field.values)[0], validators);
       } else {
         group[field.id] = new FormControl('', validators);
       }
@@ -78,6 +86,7 @@ export class NewMagazineComponent implements OnInit {
       data => {
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
+        this.taskName = data.taskName;
 
         this.magazineForm = this.createFormGroup(data.fieldList);
       },
@@ -147,14 +156,15 @@ export class NewMagazineComponent implements OnInit {
       // check required enum fields
       this.fieldList.forEach(field => {
         let list: string[] = [];
-        if (field.minNumber != null && field.type === 'enum') {
+        if (field.minNumber != null && field.type === 'enum' && field.multiple) {
           list = this.magazineForm.value[field.id];
 
+          if (list.length < field.minNumber) {
+            result = false;
+          }
         }
 
-        if (list.length < field.minNumber) {
-          result = false;
-        }
+
       });
 
       // also check if the rest of the fields are valid

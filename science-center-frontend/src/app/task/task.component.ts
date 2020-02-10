@@ -1,9 +1,11 @@
+import { UploadService } from './../services/upload.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService } from '../services/task.service';
 import { Field } from '../model/field';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Value } from '../model/value';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-task',
@@ -17,10 +19,18 @@ export class TaskComponent implements OnInit {
   taskName: string;
   fieldList: Field[];
   nextTaskId: string;
+  processId: string;
+
+  selectedFiles: FileList;
+  currentFileUpload: File;
+
+  downloadLink: string;
 
   constructor(private actrouter: ActivatedRoute,
               private router: Router,
-              private taskService: TaskService) { }
+              private taskService: TaskService,
+              private sanitizer: DomSanitizer,
+              private uploadService: UploadService) { }
 
   id: string;
 
@@ -31,6 +41,7 @@ export class TaskComponent implements OnInit {
         this.id = params.get('id');
       });
 
+    this.downloadLink = '';
     this.getTask();
   }
 
@@ -41,7 +52,7 @@ export class TaskComponent implements OnInit {
         this.fieldList = data.fieldList;
         this.taskId = data.taskId;
         this.taskName = data.taskName;
-
+        this.processId = data.processId;
         this.taskForm = this.createFormGroup(data.fieldList);
       },
       error => {
@@ -60,44 +71,50 @@ export class TaskComponent implements OnInit {
   createFormGroup(fields: Field[]) {
 
     console.log(fields);
-    
+
     const group: any = {};
 
     fields.forEach(field => {
 
-      const validators = [];
+      if (!field.download) {
+        const validators = [];
 
-      if (field.required) {
-        validators.push(Validators.required);
-      }
+        if (field.required) {
+          validators.push(Validators.required);
+        }
 
-      if (field.type === 'long' && field.minNumber != null) {
-        validators.push(Validators.min(field.minNumber));
-      }
+        if (field.type === 'long' && field.minNumber != null) {
+          validators.push(Validators.min(field.minNumber));
+        }
 
-      if (field.type === 'enum' && !field.multiple && field.value == null) {
-        group[field.id] = new FormControl(Object.keys(field.values)[0], validators);
-      } else if (field.type === 'enum' && !field.multiple && field.value != null) {
-        group[field.id] = new FormControl(field.value, validators);
+        if (field.type === 'enum' && !field.multiple && field.value == null) {
+          group[field.id] = new FormControl(Object.keys(field.values)[0], validators);
+        } else if (field.type === 'enum' && !field.multiple && field.value != null) {
+          group[field.id] = new FormControl(field.value, validators);
+        } else {
+          group[field.id] = new FormControl('', validators);
+        }
+
+        if (field.type === 'boolean') {
+          group[field.id].value = false;
+        }
       } else {
-        group[field.id] = new FormControl('', validators);
+        this.downloadLink = field.value;
       }
-
-      if (field.type === 'boolean') {
-        group[field.id].value = false;
-      }
-
     });
 
     const formgroup = new FormGroup(group);
 
     fields.forEach(field => {
-      if (field.value !== null) {
-        formgroup.get(field.id).setValue(field.value);
-      }
+      if (!field.download){
 
-      if (field.readonly) {
-        formgroup.get(field.id).disable();
+        if (field.value !== null) {
+          formgroup.get(field.id).setValue(field.value);
+        }
+
+        if (field.readonly) {
+          formgroup.get(field.id).disable();
+        }
       }
     });
 
@@ -112,6 +129,7 @@ export class TaskComponent implements OnInit {
       data => {
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
+        this.taskName = data.taskName;
 
         this.taskForm = this.createFormGroup(data.fieldList);
       },
@@ -121,14 +139,43 @@ export class TaskComponent implements OnInit {
     );
   }
 
-  // submits the task
   onSubmit() {
+    let upload = false;
+    this.fieldList.forEach(field => {
+      if (field.upload === true) {
+        upload = true;
+      }
+    });
+
+    if (upload) {
+      this.currentFileUpload = this.selectedFiles.item(0);
+      this.uploadService.uploadFile(this.currentFileUpload, this.processId).subscribe(
+        data => {
+          console.log('File is completely uploaded!');
+
+          this.submitForm();
+        },
+        errors => {
+          alert('There was an error while uplodaing the file');
+        }
+      );
+
+      this.selectedFiles = undefined;
+    } else {
+      this.submitForm();
+    }
+  }
+
+  // submits the task
+  submitForm() {
     const valuesList = new Array<Value>();
 
     console.log(valuesList);
 
     this.fieldList.forEach(field => {
-      if (field.type === 'enum' && field.multiple === false) {
+      if (field.download) {
+
+      } else if (field.type === 'enum' && field.multiple === false) {
         valuesList.push({id: field.id, value: this.taskForm.getRawValue()[field.id].toString()});
       } else {
         valuesList.push({id: field.id, value: this.taskForm.getRawValue()[field.id]});
@@ -178,15 +225,35 @@ export class TaskComponent implements OnInit {
         let list: string[] = [];
         if (field.minNumber != null && field.type === 'enum') {
           list = this.taskForm.value[field.id];
+
+          if (list.length < field.minNumber) {
+            result = false;
+          }
         }
 
-        if (list.length < field.minNumber) {
-          result = false;
+      });
+
+      let upload = false;
+      this.fieldList.forEach(field => {
+        if (field.upload === true) {
+          upload = true;
         }
       });
 
-      // also check if the rest of the fields are valid
-      return result && this.taskForm.valid;
+      if (upload) {
+        return this.taskForm.valid && (this.selectedFiles !== undefined);
+      } else {
+        return result && this.taskForm.valid;
+      }
+
+    }
+
+    public getSantizeUrl(url: string) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+
+    selectFile(event) {
+      this.selectedFiles = event.target.files;
     }
 
 }

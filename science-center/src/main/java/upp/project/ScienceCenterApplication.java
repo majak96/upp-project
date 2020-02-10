@@ -1,5 +1,8 @@
 package upp.project;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,12 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.client.RestTemplate;
 
 import upp.project.model.RegisteredUser;
 import upp.project.model.Role;
 import upp.project.services.UserService;
 
+@EnableScheduling
 @SpringBootApplication
 public class ScienceCenterApplication {
 	
@@ -28,6 +34,7 @@ public class ScienceCenterApplication {
 	UserService userService;
 	
 	public static void main(String[] args) {
+		createFolderForUploads();
 		SpringApplication.run(ScienceCenterApplication.class, args);
 		
 	}
@@ -95,6 +102,18 @@ public class ScienceCenterApplication {
 					identityService.createMembership(user.getUsername(), "authors");
 				}
 			}
+		}
+	}
+	
+	private static void createFolderForUploads() {
+		try {
+			if(Files.exists(Paths.get("uploaded-papers"))) {
+				FileSystemUtils.deleteRecursively(Paths.get("uploaded-papers").toFile());
+			}
+			Files.createDirectory(Paths.get("uploaded-papers"));
+		}
+		catch(IOException e) {
+			throw new RuntimeException("There was en error while initializing storage!");
 		}
 	}
 	

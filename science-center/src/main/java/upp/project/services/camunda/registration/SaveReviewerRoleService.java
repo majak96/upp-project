@@ -40,7 +40,7 @@ public class SaveReviewerRoleService implements JavaDelegate{
 				user.setAuthority(authorityService.findByRole(Role.ROLE_REVIEWER));
 				userService.save(user);
 				
-				identityService.deleteMembership(user.getUsername(), "registeredusers");
+				identityService.deleteMembership(user.getUsername(), "authors");
 				identityService.createMembership(user.getUsername(), "reviewers");
 			}
 		}	

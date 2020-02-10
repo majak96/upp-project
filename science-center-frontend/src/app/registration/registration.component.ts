@@ -17,12 +17,14 @@ export class RegistrationComponent implements OnInit {
   fieldList: Field[];
   taskId: string;
   nextTaskId: string;
+  taskName: string;
 
   constructor(private registrationService: RegistrationService,
               private taskService: TaskService,
               private router: Router) { }
 
   ngOnInit() {
+    this.taskName = 'Create an account';
     this.initializeRegistrationForm();
   }
 
@@ -83,6 +85,7 @@ export class RegistrationComponent implements OnInit {
       data => {
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
+        this.taskName = data.taskName;
 
         this.registrationForm = this.createFormGroup(data.fieldList);
       },

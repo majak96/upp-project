@@ -50,7 +50,7 @@ public class ValidateMagazineService implements JavaDelegate{
 				}
 			}
 			else if(formValue.getId().equals("form_price")) {
-				if(!validatePrice((Double)formValue.getValue())) {
+				if(!validatePrice((Integer)formValue.getValue())) {
 					validation = false;
 					break;
 				}
@@ -73,7 +73,7 @@ public class ValidateMagazineService implements JavaDelegate{
 		return false;
 	}
 	
-	private boolean validatePrice(Double price) {
+	private boolean validatePrice(Integer price) {
 		if(price >= 0) {
 			
 			return true;

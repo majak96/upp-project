@@ -55,10 +55,10 @@ public class Magazine {
 
 	}
 
-	public Magazine(String name, String ISSN, Double monthlyMembershipPrice) {
+	public Magazine(String name, String ISSN, Integer monthlyMembershipPrice) {
 		this.name = name;
 		this.ISSN = ISSN;
-		this.monthlyMembershipPrice = monthlyMembershipPrice;
+		this.monthlyMembershipPrice = Double.valueOf(monthlyMembershipPrice);
 		this.active = false;
 		this.email = "mail@gmail.com";
 	}

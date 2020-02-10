@@ -23,6 +23,10 @@ public class FormFieldDTO {
 	
 	private Boolean textarea;
 	
+	private Boolean upload;
+	
+	private Boolean download;
+	
 	private Integer minNumber;
 	
 	private Object value;
@@ -35,6 +39,8 @@ public class FormFieldDTO {
 		this.multiple = false;
 		this.readonly = false;
 		this.textarea = false;
+		this.upload = false;
+		this.download = false;
 	}
 
 	public FormFieldDTO(String id, String label, String type) {
@@ -46,6 +52,8 @@ public class FormFieldDTO {
 		this.multiple = false;
 		this.readonly = false;
 		this.textarea = false;
+		this.upload = false;
+		this.download = false;
 	}
 
 	public String getId() {
@@ -142,6 +150,22 @@ public class FormFieldDTO {
 
 	public void setTextarea(Boolean textarea) {
 		this.textarea = textarea;
+	}
+
+	public Boolean getUpload() {
+		return upload;
+	}
+
+	public void setUpload(Boolean upload) {
+		this.upload = upload;
+	}
+
+	public Boolean getDownload() {
+		return download;
+	}
+
+	public void setDownload(Boolean download) {
+		this.download = download;
 	}
 
 }

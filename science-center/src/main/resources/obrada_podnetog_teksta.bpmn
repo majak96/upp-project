@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_182w4p0" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.6.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_182w4p0" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.4.1">
   <bpmn:process id="processing_submitted_text" name="Prijavljivanje novog rada" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" camunda:initiator="process_initiator">
       <bpmn:outgoing>SequenceFlow_03e93nt</bpmn:outgoing>
@@ -58,6 +58,9 @@
             </camunda:validation>
           </camunda:formField>
           <camunda:formField id="form_pdf" label="Paper in PDF" type="string">
+            <camunda:properties>
+              <camunda:property id="upload" value="true" />
+            </camunda:properties>
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
@@ -77,7 +80,7 @@
       <bpmn:outgoing>SequenceFlow_0nvde2s</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_00l967s</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0nvde2s" name="Autor nema aktivnu članarinu" sourceRef="ExclusiveGateway_1t2w0rx" targetRef="Task_0qk84ya">
+    <bpmn:sequenceFlow id="SequenceFlow_0nvde2s" name="Author doesn&#39;t have a membership" sourceRef="ExclusiveGateway_1t2w0rx" targetRef="Task_0qk84ya">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${act_membership == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="ExclusiveGateway_1g2ngzo">
@@ -85,7 +88,7 @@
       <bpmn:incoming>SequenceFlow_0bcybxe</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_07pjhmr</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_00l967s" name="Autor ima aktivnu članarinu" sourceRef="ExclusiveGateway_1t2w0rx" targetRef="ExclusiveGateway_186lztl">
+    <bpmn:sequenceFlow id="SequenceFlow_00l967s" name="Actor has an active membership" sourceRef="ExclusiveGateway_1t2w0rx" targetRef="ExclusiveGateway_186lztl">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${act_membership == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="ExclusiveGateway_186lztl">
@@ -143,9 +146,10 @@
     <bpmn:userTask id="Task_099k29g" name="Reviewing PDF" camunda:assignee="${magazine_editor_in_chief}">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+          <camunda:formField id="file_path" label="Paper in PDF" type="string" defaultValue="${file_path}">
             <camunda:properties>
               <camunda:property id="readonly" value="true" />
+              <camunda:property id="download" />
             </camunda:properties>
           </camunda:formField>
           <camunda:formField id="form_comment" label="Comment" type="string" />
@@ -203,6 +207,9 @@
             </camunda:validation>
           </camunda:formField>
           <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+            <camunda:properties>
+              <camunda:property id="upload" value="true" />
+            </camunda:properties>
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
@@ -326,6 +333,9 @@
             </camunda:properties>
           </camunda:formField>
           <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+            <camunda:properties>
+              <camunda:property id="upload" value="true" />
+            </camunda:properties>
             <camunda:validation>
               <camunda:constraint name="required" />
             </camunda:validation>
@@ -365,9 +375,10 @@
               <camunda:property id="readonly" />
             </camunda:properties>
           </camunda:formField>
-          <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+          <camunda:formField id="file_path" label="Paper in PDF" type="string" defaultValue="${file_path}">
             <camunda:properties>
-              <camunda:property id="readonly" />
+              <camunda:property id="readonly" value="true" />
+              <camunda:property id="download" value="true" />
             </camunda:properties>
           </camunda:formField>
           <camunda:formField id="aut_ok" label="The requests of the reviewers were respected and the paper is accepted" type="boolean" />
@@ -440,9 +451,10 @@
     <bpmn:userTask id="UserTask_0mvqu2b" name="Reviewing the paper" camunda:assignee="${magazine_editor_in_chief}">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+          <camunda:formField id="file_path" label="Paper in PDF" type="string" defaultValue="${file_path}">
             <camunda:properties>
               <camunda:property id="readonly" />
+              <camunda:property id="download" />
             </camunda:properties>
           </camunda:formField>
           <camunda:formField id="form_rev_a_comment" label="Comment for the author" type="string" />
@@ -473,9 +485,10 @@
       <bpmn:userTask id="Task_1cjpnvn" name="Reviewing the paper" camunda:assignee="${one_rev}">
         <bpmn:extensionElements>
           <camunda:formData>
-            <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+            <camunda:formField id="file_path" label="Paper in PDF" type="string" defaultValue="${file_path}">
               <camunda:properties>
                 <camunda:property id="readonly" value="true" />
+                <camunda:property id="download" value="true" />
               </camunda:properties>
             </camunda:formField>
             <camunda:formField id="form_rev_a_comment" label="Comment for the author" type="string" />
@@ -515,9 +528,10 @@
       <bpmn:userTask id="UserTask_1re2aa9" name="Reviewing the paper" camunda:assignee="${form_reviewer_replacement}">
         <bpmn:extensionElements>
           <camunda:formData>
-            <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+            <camunda:formField id="file_path" label="Paper in PDF" type="string" defaultValue="${file_path}">
               <camunda:properties>
-                <camunda:property id="readonly" />
+                <camunda:property id="readonly" value="true" />
+                <camunda:property id="download" value="true" />
               </camunda:properties>
             </camunda:formField>
             <camunda:formField id="form_rev_a_comment" label="Comment for the author" type="string" />
@@ -574,7 +588,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${open_access == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0ekpmpo" sourceRef="Task_0ie4dxh" targetRef="ExclusiveGateway_1t2w0rx" />
-    <bpmn:serviceTask id="Task_0ie4dxh" name="Provera članarine autora" camunda:expression="${false}" camunda:resultVariable="act_membership">
+    <bpmn:serviceTask id="Task_0ie4dxh" name="Checking if author has an active membership" camunda:class="upp.project.services.camunda.paper.CheckAuthorMembershipService">
       <bpmn:incoming>SequenceFlow_1itlmi4</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ekpmpo</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -720,21 +734,27 @@
       </bpmn:sequenceFlow>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="SequenceFlow_1fu8lex" sourceRef="SubProcess_1j6ojs6" targetRef="ExclusiveGateway_1pjgte6" />
-    <bpmn:subProcess id="Task_0qk84ya" name="Uplata članarine">
+    <bpmn:subProcess id="Task_0qk84ya" name="Payment of membership fees">
       <bpmn:incoming>SequenceFlow_0nvde2s</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ojy914</bpmn:outgoing>
       <bpmn:sequenceFlow id="SequenceFlow_1xyvkps" sourceRef="StartEvent_14jphdz" targetRef="Task_178u4a6" />
-      <bpmn:sequenceFlow id="SequenceFlow_16ud0k1" sourceRef="Task_178u4a6" targetRef="EndEvent_0dfiyqv" />
+      <bpmn:sequenceFlow id="SequenceFlow_16ud0k1" sourceRef="Task_178u4a6" targetRef="IntermediateThrowEvent_1dk5l4z" />
       <bpmn:serviceTask id="Task_178u4a6" name="Payment of membership fees" camunda:class="upp.project.services.camunda.paper.PaymentOfMembershipService">
         <bpmn:incoming>SequenceFlow_1xyvkps</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_16ud0k1</bpmn:outgoing>
       </bpmn:serviceTask>
       <bpmn:endEvent id="EndEvent_0dfiyqv">
-        <bpmn:incoming>SequenceFlow_16ud0k1</bpmn:incoming>
+        <bpmn:incoming>SequenceFlow_1nq4cuy</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:startEvent id="StartEvent_14jphdz">
         <bpmn:outgoing>SequenceFlow_1xyvkps</bpmn:outgoing>
       </bpmn:startEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1nq4cuy" sourceRef="IntermediateThrowEvent_1dk5l4z" targetRef="EndEvent_0dfiyqv" />
+      <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1dk5l4z" name="PaymentSuccess">
+        <bpmn:incoming>SequenceFlow_16ud0k1</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_1nq4cuy</bpmn:outgoing>
+        <bpmn:messageEventDefinition messageRef="Message_0bzd1du" />
+      </bpmn:intermediateCatchEvent>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="SequenceFlow_1ojy914" sourceRef="Task_0qk84ya" targetRef="ExclusiveGateway_186lztl" />
     <bpmn:sequenceFlow id="SequenceFlow_1wg05nn" sourceRef="ExclusiveGateway_1pjgte6" targetRef="Task_0mwww5c" />
@@ -912,9 +932,10 @@
     <bpmn:userTask id="UserTask_1xsgmit" name="Reviewing the paper" camunda:assignee="${form_reviewer_another}">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="form_pdf" label="Paper in PDF" type="string" defaultValue="${form_pdf}">
+          <camunda:formField id="file_path" label="Paper in PDF" type="string" defaultValue="${file_path}">
             <camunda:properties>
-              <camunda:property id="readonly" />
+              <camunda:property id="readonly" value="true" />
+              <camunda:property id="download" value="true" />
             </camunda:properties>
           </camunda:formField>
           <camunda:formField id="form_rev_a_comment" label="Comment for the author" type="string" />
@@ -956,6 +977,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_0oy5nee" sourceRef="ExclusiveGateway_1lxcfa7" targetRef="UserTask_0f51q3a" />
     <bpmn:sequenceFlow id="SequenceFlow_0ipsqfv" sourceRef="BoundaryEvent_0rwo9ik" targetRef="ExclusiveGateway_1lxcfa7" />
   </bpmn:process>
+  <bpmn:message id="Message_0bzd1du" name="PaymentSuccess" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="processing_submitted_text">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -992,7 +1014,7 @@
         <di:waypoint x="1171" y="496" />
         <di:waypoint x="1171" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1129" y="418" width="83" height="27" />
+          <dc:Bounds x="1134" y="390" width="71" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_1g2ngzo_di" bpmnElement="ExclusiveGateway_1g2ngzo" isMarkerVisible="true">
@@ -1002,7 +1024,7 @@
         <di:waypoint x="1195" y="520" />
         <di:waypoint x="1435" y="520" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1237" y="526" width="85" height="27" />
+          <dc:Bounds x="1289" y="500" width="62" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_186lztl_di" bpmnElement="ExclusiveGateway_186lztl" isMarkerVisible="true">
@@ -1104,14 +1126,14 @@
         <dc:Bounds x="4332" y="262" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_14jphdz_di" bpmnElement="StartEvent_14jphdz">
-        <dc:Bounds x="1102" y="187" width="36" height="36" />
+        <dc:Bounds x="1022" y="187" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_0dfiyqv_di" bpmnElement="EndEvent_0dfiyqv">
-        <dc:Bounds x="1492" y="187" width="36" height="36" />
+        <dc:Bounds x="1572" y="187" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1xyvkps_di" bpmnElement="SequenceFlow_1xyvkps">
-        <di:waypoint x="1138" y="205" />
-        <di:waypoint x="1270" y="205" />
+        <di:waypoint x="1058" y="205" />
+        <di:waypoint x="1130" y="205" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1a3nf86_di" bpmnElement="SequenceFlow_1a3nf86">
         <di:waypoint x="5270" y="667" />
@@ -1320,11 +1342,11 @@
         <dc:Bounds x="6092" y="652" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_16ud0k1_di" bpmnElement="SequenceFlow_16ud0k1">
-        <di:waypoint x="1370" y="205" />
-        <di:waypoint x="1492" y="205" />
+        <di:waypoint x="1230" y="205" />
+        <di:waypoint x="1412" y="205" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1glc7f6_di" bpmnElement="Task_178u4a6">
-        <dc:Bounds x="1270" y="165" width="100" height="80" />
+        <dc:Bounds x="1130" y="165" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UserTask_0mvqu2b_di" bpmnElement="UserTask_0mvqu2b">
         <dc:Bounds x="6060" y="1100" width="100" height="80" />
@@ -1694,7 +1716,7 @@
         <di:waypoint x="8810" y="340" />
         <di:waypoint x="5955" y="340" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="9726" y="550" width="88" height="40" />
+          <dc:Bounds x="8765" y="560" width="89" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0cfcnvu_di" bpmnElement="SequenceFlow_0cfcnvu">
@@ -1849,6 +1871,16 @@
         <di:waypoint x="7270" y="810" />
         <di:waypoint x="7145" y="810" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1nq4cuy_di" bpmnElement="SequenceFlow_1nq4cuy">
+        <di:waypoint x="1448" y="205" />
+        <di:waypoint x="1572" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1wfl5ng_di" bpmnElement="IntermediateThrowEvent_1dk5l4z">
+        <dc:Bounds x="1412" y="187" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1387" y="230" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

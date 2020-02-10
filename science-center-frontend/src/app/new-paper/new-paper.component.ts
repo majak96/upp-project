@@ -1,3 +1,4 @@
+import { UploadService } from './../services/upload.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Field } from '../model/field';
@@ -5,6 +6,7 @@ import { TaskService } from '../services/task.service';
 import { Router } from '@angular/router';
 import { PaperService } from '../services/paper.service';
 import { Value } from '../model/value';
+import { NullTemplateVisitor } from '@angular/compiler';
 
 @Component({
   selector: 'app-new-paper',
@@ -18,13 +20,17 @@ export class NewPaperComponent implements OnInit {
   taskId: string;
   nextTaskId: string;
   processId: string;
+  selectedFiles: FileList;
+  currentFileUpload: File;
+  taskName: string;
 
   constructor(private paperService: PaperService,
               private router: Router,
-              private taskService: TaskService) { }
+              private taskService: TaskService,
+              private uploadService: UploadService) { }
 
   ngOnInit() {
-
+    this.taskName = 'Add a new paper';
     this.initializeFirstForm();
   }
 
@@ -86,6 +92,7 @@ export class NewPaperComponent implements OnInit {
       data => {
         this.taskId = data.taskId;
         this.fieldList = data.fieldList;
+        this.taskName = data.taskName;
 
         this.form = this.createFormGroup(data.fieldList);
       },
@@ -95,8 +102,35 @@ export class NewPaperComponent implements OnInit {
     );
   }
 
-  // submit data from the form
   onSubmit() {
+    let upload = false;
+    this.fieldList.forEach(field => {
+      if (field.upload === true) {
+        upload = true;
+      }
+    });
+
+    if (upload) {
+      this.currentFileUpload = this.selectedFiles.item(0);
+      this.uploadService.uploadFile(this.currentFileUpload, this.processId).subscribe(
+        data => {
+          console.log('File is completely uploaded!');
+
+          this.submitForm();
+        },
+        errors => {
+          alert('There was an error while uplodaing the file');
+        }
+      );
+
+      this.selectedFiles = undefined;
+    } else {
+      this.submitForm();
+    }
+  }
+
+  // submit data from the form
+  submitForm() {
     // create a list of objects to submit
     const valuesList = new Array<Value>();
 
@@ -107,6 +141,8 @@ export class NewPaperComponent implements OnInit {
         valuesList.push({id: field.id, value: this.form.value[field.id]});
       }
     });
+
+    console.log(valuesList);
 
     // submit the data
     this.taskService.submitFormTask(valuesList, this.taskId).subscribe(
@@ -142,6 +178,27 @@ export class NewPaperComponent implements OnInit {
       }
 
     );
+
+  }
+
+  selectFile(event) {
+    this.selectedFiles = event.target.files;
+  }
+
+  validForm(): boolean {
+
+    let upload = false;
+    this.fieldList.forEach(field => {
+      if (field.upload === true) {
+        upload = true;
+      }
+    });
+
+    if (upload) {
+      return this.form.valid && (this.selectedFiles !== undefined);
+    } else {
+      return this.form.valid;
+    }
   }
 
 }

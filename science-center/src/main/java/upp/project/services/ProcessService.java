@@ -1,12 +1,14 @@
 package upp.project.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
@@ -14,10 +16,12 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.form.FormFieldValidationConstraint;
 import org.camunda.bpm.engine.form.TaskFormData;
+import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.identity.Group;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import upp.project.dtos.FormFieldDTO;
@@ -35,6 +39,9 @@ public class ProcessService {
 	
 	@Autowired
 	IdentityService identityService;
+	
+	@Autowired
+	HistoryService historyService;
 	
 	@Autowired
 	FormService formService;
@@ -100,6 +107,12 @@ public class ProcessService {
 			else if(fieldProperties.keySet().contains("textarea")) {
 				frontendField.setTextarea(true);
 			}
+			else if(fieldProperties.keySet().contains("upload")) {
+				frontendField.setUpload(true);
+			}
+			else if(fieldProperties.keySet().contains("download")) {
+				frontendField.setDownload(true);
+			}
 			
 			if(fieldProperties.keySet().contains("min")) {
 				frontendField.setMinNumber(Integer.parseInt(fieldProperties.get("min")));
@@ -110,7 +123,7 @@ public class ProcessService {
 			}
 			
 			frontendField.setValue(field.getValue().getValue());
-			
+									
 			//set enumeration values
 			if(field.getType().getName().equals("enum")) {
 				Map<String, String> valuesMap = (LinkedHashMap<String, String>) field.getType().getInformation("values");
@@ -233,6 +246,23 @@ public class ProcessService {
 		
 		return groupNames;
 	}
+	
+	 @Scheduled(initialDelay = 3600000, fixedRate = 86400000)
+	  public void checkOldProcessInstances() {
+	    //all active processes
+	    List<HistoricProcessInstance> processes = historyService.createHistoricProcessInstanceQuery().active().unfinished().list();
+
+	    Date yesterday = new Date(System.currentTimeMillis()-24*60*60*1000);
+
+	    for(HistoricProcessInstance process : processes) {
+	      Date startDate = process.getStartTime();
+	      
+	      //delete process instance
+	      if(startDate.before(yesterday)) {
+	    	  runtimeService.deleteProcessInstance(process.getId(), "EXPIRED");
+	      }
+	    }
+	  }
 	
 	
 }
