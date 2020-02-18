@@ -28,12 +28,14 @@ public class SaveMagazineActivationService implements JavaDelegate{
 		System.out.println("MAG | activating the magazine");
 		
 		Long magazineId = (Long) execution.getVariable("magazineId");
+		String magazineEmail = (String) execution.getVariable("form_email");
 		
 		Magazine magazine = magazineService.findById(magazineId);
 		
 		if(magazine != null) {
 			//activate the magazine
 			magazine.setActive(true);
+			magazine.setEmail(magazineEmail);
 			magazineService.save(magazine);
 			
 			//create the first issue after activation
@@ -42,7 +44,7 @@ public class SaveMagazineActivationService implements JavaDelegate{
 			DateTime publishingDateTime = originalDateTime.plusMonths(1);
 			
 			Issue issue = new Issue(magazine, 1, publishingDateTime.toDate());
-			Issue savedIssue = issueService.save(issue);			
+			issueService.save(issue);			
 		}
 	}
 }

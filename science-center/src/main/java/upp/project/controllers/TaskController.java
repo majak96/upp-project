@@ -112,11 +112,12 @@ public class TaskController {
 		}
 		
 		if(!processService.processInstanceExists(processInstanceId)) {
+			System.out.println("i'm dead");
 			return ResponseEntity.ok(new SubmitResponseDTO());
 		}
 		
 		Object redirectLink = processService.getProcessVariable(processInstanceId, "redirect_link");
-		System.out.println("LINK HERE:" + redirectLink);
+
 		if(redirectLink != null) {
 			processService.setProcessVariable(processInstanceId, "redirect_link", null);
 		}

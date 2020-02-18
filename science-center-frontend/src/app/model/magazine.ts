@@ -1,6 +1,6 @@
 export interface Magazine {
   id: number;
   name: string;
-  ISSN: string;
+  issn: string;
   scientificAreas: any;
 }

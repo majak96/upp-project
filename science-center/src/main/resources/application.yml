@@ -29,14 +29,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL95Dialect
   mail:
     host: smtp.gmail.com
-    port: 587
-    username: timisaprojekat@gmail.com
-    password: isaprojekat.22
+    username : timisaprojekat@gmail.com
+    password : isaprojekat.22
+    port : 587
     properties:
       mail:
-        smtp: 
+        smtp:
           starttls:
-            enable: true
+            enable : true
         
 server:
   port: 9997

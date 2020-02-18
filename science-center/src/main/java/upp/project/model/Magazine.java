@@ -34,6 +34,9 @@ public class Magazine {
 	private Boolean active;
 	
 	@Column
+	private Boolean registeredOnPaymentHub;
+	
+	@Column
 	private Double monthlyMembershipPrice;
 	
 	@Column
@@ -60,7 +63,7 @@ public class Magazine {
 		this.ISSN = ISSN;
 		this.monthlyMembershipPrice = Double.valueOf(monthlyMembershipPrice);
 		this.active = false;
-		this.email = "mail@gmail.com";
+		this.registeredOnPaymentHub = false;
 	}
 
 	public Long getId() {
@@ -158,6 +161,14 @@ public class Magazine {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Boolean getRegisteredOnPaymentHub() {
+		return registeredOnPaymentHub;
+	}
+
+	public void setRegisteredOnPaymentHub(Boolean registeredOnPaymentHub) {
+		this.registeredOnPaymentHub = registeredOnPaymentHub;
 	}
 
 }

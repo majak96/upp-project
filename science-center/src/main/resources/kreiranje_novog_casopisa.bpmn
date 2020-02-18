@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0aqu6ur" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.6.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0aqu6ur" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.4.1">
   <bpmn:process id="adding_new_magazine" name="Kreiranje novog časopisa" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" camunda:initiator="process_initiator">
       <bpmn:outgoing>SequenceFlow_0et583m</bpmn:outgoing>
@@ -78,17 +78,17 @@
     <bpmn:sequenceFlow id="SequenceFlow_1ozv75n" name="Magazine is not accepted" sourceRef="ExclusiveGateway_1ka666o" targetRef="ExclusiveGateway_0lp6160">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${f_act == false}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0d4jgkv" name="Magazine is accepted" sourceRef="ExclusiveGateway_1ka666o" targetRef="ServiceTask_0t2x4in">
+    <bpmn:sequenceFlow id="SequenceFlow_0d4jgkv" name="Magazine is accepted" sourceRef="ExclusiveGateway_1ka666o" targetRef="Task_0dks3w4">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${f_act == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="EndEvent_0i7ihr3">
-      <bpmn:incoming>SequenceFlow_112dohx</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1w9dcjb</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:serviceTask id="ServiceTask_0t2x4in" name="Activating the magazine" camunda:class="upp.project.services.camunda.magazine.SaveMagazineActivationService">
-      <bpmn:incoming>SequenceFlow_0d4jgkv</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0t7cya3</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_112dohx</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_112dohx" sourceRef="ServiceTask_0t2x4in" targetRef="EndEvent_0i7ihr3" />
+    <bpmn:sequenceFlow id="SequenceFlow_112dohx" sourceRef="ServiceTask_0t2x4in" targetRef="Task_0ox52sr" />
     <bpmn:exclusiveGateway id="ExclusiveGateway_1en9vmq">
       <bpmn:incoming>SequenceFlow_1wnnwdi</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1u482wh</bpmn:incoming>
@@ -226,7 +226,36 @@
       <bpmn:incoming>SequenceFlow_081nxoi</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15ppip8</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0t7cya3" sourceRef="Task_0dks3w4" targetRef="ServiceTask_0t2x4in" />
+    <bpmn:userTask id="Task_0dks3w4" name="Email input" camunda:assignee="${process_initiator}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="form_email" label="Email " type="string">
+            <camunda:properties>
+              <camunda:property id="email" value="true" />
+            </camunda:properties>
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0d4jgkv</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0t7cya3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_02xract" sourceRef="Task_0ox52sr" targetRef="IntermediateCatchEvent_0ndakoe" />
+    <bpmn:serviceTask id="Task_0ox52sr" name="Register the magazine to PaymentHub" camunda:class="upp.project.services.camunda.magazine.RegisterMagazineToPaymentHub">
+      <bpmn:incoming>SequenceFlow_112dohx</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_02xract</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="IntermediateCatchEvent_0ndakoe" name="PaymentHubRegistration">
+      <bpmn:incoming>SequenceFlow_02xract</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1w9dcjb</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_01munc4" messageRef="Message_1gng13v" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1w9dcjb" sourceRef="IntermediateCatchEvent_0ndakoe" targetRef="EndEvent_0i7ihr3" />
   </bpmn:process>
+  <bpmn:message id="Message_1gng13v" name="PaymentHubRegistration" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="adding_new_magazine">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -262,20 +291,20 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0d4jgkv_di" bpmnElement="SequenceFlow_0d4jgkv">
         <di:waypoint x="2465" y="387" />
-        <di:waypoint x="2610" y="387" />
+        <di:waypoint x="2600" y="387" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2491" y="369" width="60" height="27" />
+          <dc:Bounds x="2475" y="373" width="60" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0i7ihr3_di" bpmnElement="EndEvent_0i7ihr3">
-        <dc:Bounds x="2762" y="369" width="36" height="36" />
+        <dc:Bounds x="3182" y="369" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_0t2x4in_di" bpmnElement="ServiceTask_0t2x4in">
-        <dc:Bounds x="2610" y="347" width="100" height="80" />
+        <dc:Bounds x="2750" y="347" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_112dohx_di" bpmnElement="SequenceFlow_112dohx">
-        <di:waypoint x="2710" y="387" />
-        <di:waypoint x="2762" y="387" />
+        <di:waypoint x="2850" y="387" />
+        <di:waypoint x="2900" y="387" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_1en9vmq_di" bpmnElement="ExclusiveGateway_1en9vmq" isMarkerVisible="true">
         <dc:Bounds x="1625" y="362" width="50" height="50" />
@@ -420,6 +449,30 @@
       <bpmndi:BPMNShape id="ServiceTask_05wrns7_di" bpmnElement="Task_1qqiuge">
         <dc:Bounds x="2060" y="190" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0t7cya3_di" bpmnElement="SequenceFlow_0t7cya3">
+        <di:waypoint x="2700" y="387" />
+        <di:waypoint x="2750" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_02mb53a_di" bpmnElement="Task_0dks3w4">
+        <dc:Bounds x="2600" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_02xract_di" bpmnElement="SequenceFlow_02xract">
+        <di:waypoint x="3000" y="387" />
+        <di:waypoint x="3072" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0txqovm_di" bpmnElement="Task_0ox52sr">
+        <dc:Bounds x="2900" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_0ndakoe_di" bpmnElement="IntermediateCatchEvent_0ndakoe">
+        <dc:Bounds x="3072" y="369" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3051" y="412" width="87" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1w9dcjb_di" bpmnElement="SequenceFlow_1w9dcjb">
+        <di:waypoint x="3108" y="387" />
+        <di:waypoint x="3182" y="387" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

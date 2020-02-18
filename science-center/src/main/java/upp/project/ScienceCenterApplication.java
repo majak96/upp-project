@@ -47,7 +47,7 @@ public class ScienceCenterApplication {
 	@PostConstruct
     public void createCamundaGroupsAndUsers() { 
 		//create groups
-		String[] groupNames = {"admins", "reviewers", "editors", "guests", "authors"};	
+		String[] groupNames = {"admins", "reviewers", "editors", "guests", "authors", "users"};	
 		createCamundaGroups(Arrays.asList(groupNames));
 		
 		//create users
@@ -100,6 +100,9 @@ public class ScienceCenterApplication {
 				}
 				else if(user.getAuthority().getRole().equals(Role.ROLE_AUTHOR)) {
 					identityService.createMembership(user.getUsername(), "authors");
+				}
+				else if(user.getAuthority().getRole().equals(Role.ROLE_USER)) {
+					identityService.createMembership(user.getUsername(), "users");		
 				}
 			}
 		}

@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import upp.project.dtos.OrderInformationDTO;
 import upp.project.dtos.OrderResponseDTO;
 import upp.project.model.Magazine;
-import upp.project.model.RegisteredUser;
 import upp.project.services.MagazineService;
 import upp.project.services.UserService;
 

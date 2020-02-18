@@ -153,6 +153,7 @@ export class TaskComponent implements OnInit {
         data => {
           console.log('File is completely uploaded!');
 
+
           this.submitForm();
         },
         errors => {
@@ -188,6 +189,10 @@ export class TaskComponent implements OnInit {
 
         this.router.navigateByUrl('/tasks');*/
         this.nextTaskId = data.nextTask;
+
+        if (data.redirectLink != null) {
+          document.location.href  = data.redirectLink;
+        }
 
         if (this.nextTaskId !== null) {
           // invalid data

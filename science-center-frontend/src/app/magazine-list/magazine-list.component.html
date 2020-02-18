@@ -9,10 +9,23 @@
         <div *ngIf="magazines.length!==0" class="row">
           <div class="col-4" *ngFor="let magazine of magazines" >
             <div class="card border-secondary mb-3">
-              <div class="card-header text-center">{{magazine.name}}</div>
-              <div class="card-body text-secondary">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <div class="card-header">
+                <h4>
+                  <span>{{magazine.name}}</span>
+                  <span style="float: right">
+                    <a><i class="fas fa-cash-register"></i></a> <a class="ml-3"><i class="fab fa-paypal"></i></a>
+                  </span>
+                </h4>
               </div>
+              <div class="card-body text-secondary">
+                <p>
+                  Scientific areas: <br>
+                  <span class="ml-3" *ngFor="let area of magazine.scientificAreas; index as i">
+                    {{i+1}}. {{area.name}} <span *ngIf="i < (magazine.scientificAreas.length-1)"><br></span>
+                  </span>
+                </p>
+              </div>
+              <div class="card-footer text-center text-muted">ISSN: {{magazine.issn}}</div>
             </div>
           </div>
         </div>

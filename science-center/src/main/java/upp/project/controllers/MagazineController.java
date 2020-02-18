@@ -3,13 +3,16 @@ package upp.project.controllers;
 import java.util.List;
 
 import org.camunda.bpm.engine.IdentityService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +26,9 @@ import upp.project.services.ProcessService;
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 @RequestMapping(value = "/magazine", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MagazineController {
+	
+	@Autowired
+	RuntimeService runtimeService;
 
 	@Autowired
 	ProcessService processService;
@@ -59,6 +65,25 @@ public class MagazineController {
 		List<Magazine> activeMagazines = magazineService.getActiveMagazines();
 		
 		return ResponseEntity.ok(activeMagazines);
+	}
+	
+	@GetMapping(value = "/registration/{processInstanceId}/{magazineId}")
+	public ResponseEntity<?> successRegistration(@PathVariable String processInstanceId, @PathVariable Long magazineId) {
+		
+		System.out.println("MAG | registered on PaymentHub");
+		
+		Magazine magazine = magazineService.findById(magazineId);
+		
+		if(magazine != null ) {
+			//set registration flag
+			magazine.setRegisteredOnPaymentHub(true);
+			
+			runtimeService.createMessageCorrelation("PaymentHubRegistration").processInstanceId(processInstanceId).correlateWithResult();
+			
+			return ResponseEntity.ok().build();
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
 	/*@GetMapping("/issue/{magazineId}")

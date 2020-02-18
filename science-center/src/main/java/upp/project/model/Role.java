@@ -4,7 +4,8 @@ public enum Role {
 	ROLE_ADMINISTRATOR("admins"),
 	ROLE_REVIEWER("reviewers"),
 	ROLE_EDITOR("editors"),
-	ROLE_AUTHOR("authors")
+	ROLE_AUTHOR("authors"),
+	ROLE_USER("users")
 	;
 	
 	private String camundaGroupName;
