@@ -40,6 +40,12 @@ public class Magazine {
 	private Double monthlyMembershipPrice;
 	
 	@Column
+	private Double issuePrice;
+	
+	@Column 
+	private Double paperPrice;
+	
+	@Column
 	private String email;
 	
 	@ManyToOne
@@ -58,10 +64,10 @@ public class Magazine {
 
 	}
 
-	public Magazine(String name, String ISSN, Integer monthlyMembershipPrice) {
+	public Magazine(String name, String ISSN, String email) {
 		this.name = name;
 		this.ISSN = ISSN;
-		this.monthlyMembershipPrice = Double.valueOf(monthlyMembershipPrice);
+		this.email = email;
 		this.active = false;
 		this.registeredOnPaymentHub = false;
 	}
@@ -169,6 +175,22 @@ public class Magazine {
 
 	public void setRegisteredOnPaymentHub(Boolean registeredOnPaymentHub) {
 		this.registeredOnPaymentHub = registeredOnPaymentHub;
+	}
+
+	public Double getIssuePrice() {
+		return issuePrice;
+	}
+
+	public void setIssuePrice(Double issuePrice) {
+		this.issuePrice = issuePrice;
+	}
+
+	public Double getPaperPrice() {
+		return paperPrice;
+	}
+
+	public void setPaperPrice(Double paperPrice) {
+		this.paperPrice = paperPrice;
 	}
 
 }

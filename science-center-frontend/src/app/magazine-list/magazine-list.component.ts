@@ -1,3 +1,4 @@
+import { PaymentService } from './../services/payment.service';
 import { MagazineService } from './../services/magazine.service';
 import { Magazine } from './../model/magazine';
 import { Component, OnInit } from '@angular/core';
@@ -10,7 +11,8 @@ export class MagazineListComponent implements OnInit {
 
   magazines: Magazine[];
 
-  constructor(private magazineService: MagazineService) { }
+  constructor(private magazineService: MagazineService,
+              private paymentService: PaymentService) { }
 
   ngOnInit() {
 
@@ -28,6 +30,17 @@ export class MagazineListComponent implements OnInit {
         } else {
           alert('An error occurred. Please try again!');
         }
+      }
+    );
+  }
+
+  subscribe(magazine: Magazine) {
+    this.paymentService.subscribeMagazine(magazine.id).subscribe(
+      data => {
+        document.location.href = data.url;
+      },
+      error => {
+        alert('An error occurred. Please try again.');
       }
     );
   }

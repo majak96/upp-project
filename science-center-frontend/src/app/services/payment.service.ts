@@ -10,9 +10,9 @@ import { Paper } from '../model/paper';
 @Injectable({
   providedIn: 'root'
 })
-export class PaperService {
+export class PaymentService {
 
-  baseUrl = 'https://localhost:9997/paper/';
+  baseUrl = 'https://localhost:9997/subscription/';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' })
@@ -20,14 +20,9 @@ export class PaperService {
 
   constructor(private http: HttpClient) { }
 
-  startNewPaperProcess(): Observable<Form> {
+  subscribeMagazine(magazineId: number): Observable<Response> {
 
-    return this.http.get<Form>(this.baseUrl + 'form/', this.httpOptions);
-  }
-
-  getIssuePapers(issueId: number): Observable<Paper[]> {
-
-    return this.http.get<Paper[]>(this.baseUrl + 'issue/' + issueId, this.httpOptions);
+    return this.http.post<Response>(this.baseUrl + 'create/' + magazineId, this.httpOptions);
   }
 
 }

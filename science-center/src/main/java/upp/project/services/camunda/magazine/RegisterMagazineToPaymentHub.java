@@ -34,7 +34,7 @@ public class RegisterMagazineToPaymentHub implements JavaDelegate{
 		if(magazine != null) {
 			String successUrl = "https://localhost:9997/magazine/registration/" + execution.getProcessInstanceId() + "/" + magazine.getId();
 			
-			RegistrationDTO registrationDTO = new RegistrationDTO(magazine.getEmail(), magazine.getName(), successUrl);	
+			RegistrationDTO registrationDTO = new RegistrationDTO(magazine.getEmail(), magazine.getName(), successUrl, "https://localhost:4206/");	
 	
 			HttpEntity<RegistrationDTO> request = new HttpEntity<>(registrationDTO);
 				

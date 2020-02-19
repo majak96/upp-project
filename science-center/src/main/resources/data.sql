@@ -82,7 +82,7 @@ INSERT INTO registered_user_scientific_areas(registered_user_id, scientific_area
 INSERT INTO registered_user_scientific_areas(registered_user_id, scientific_areas_id) VALUES (13, 5);
 
 --Magazine One
-INSERT INTO magazine(issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price, email, registered_on_payment_hub) VALUES (14859382, true, 'Magazine One', 'READERS', 2, 11, 'magazine-one@upp.com', true);
+INSERT INTO magazine(issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price, email, registered_on_payment_hub, paper_price, issue_price) VALUES (14859382, true, 'Magazine One', 'READERS', 2, 11, 'magazine-one@upp.com', true, 6, 3);
 
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (1, 1);
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (1, 3);
@@ -95,8 +95,27 @@ INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (1, 6);
 INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (1, 7);
 INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (1, 8);
 
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (4, 6, false, '2020-03-07 13:56:58', 1);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (1, 6, true, '2019-02-07 13:56:58', 1);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (2, 6, true, '2019-03-07 13:56:58', 1);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (3, 6, true, '2019-04-07 13:56:58', 1);
+
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('9845839', true, 'something; something', 'bla bla', 'path', 3, 'Paper Title 1', 10, 2);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('4739204', true, 'something; something', 'bla bla', 'path', 3, 'Paper Title 2', 10, 2);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('2749302', true, 'something; something', 'bla bla', 'path', 3, 'Paper Title 1', 10, 3);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('4730385', true, 'something; something', 'bla bla', 'path', 3, 'Paper Title 2', 10, 3);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('5840340', true, 'something; something', 'bla bla', 'path', 3, 'Paper Title 1', 10, 4);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('2584932', true, 'something; something', 'bla bla', 'path', 3, 'Paper Title 2', 10, 4);
+	
+
 --Magazine Two
-INSERT INTO magazine(issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price, email, registered_on_payment_hub) VALUES (38475938, true, 'Magazine Two', 'READERS', 3, 13, 'magazine-two@upp.com', true);
+INSERT INTO magazine(issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price, email, registered_on_payment_hub, paper_price, issue_price) VALUES (38475938, true, 'Magazine Two', 'READERS', 3, 13, 'magazine-two@upp.com', true, 5, 2);
 
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (2, 2);
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (2, 5);
@@ -110,8 +129,26 @@ INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (2, 7);
 INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (2, 8);
 INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (2, 6);
 
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (4, 5, false, '2020-03-07 13:56:58', 2);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (1, 5, true, '2019-02-07 13:56:58', 2);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (2, 5, true, '2019-03-07 13:56:58', 2);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (3, 5, true, '2019-04-07 13:56:58', 2);
+
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('9845839', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 1', 10, 6);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('4739204', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 2', 10, 6);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('2749302', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 1', 10, 7);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('4730385', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 2', 10, 7);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('5840340', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 1', 10, 8);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('2584932', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 2', 10, 8);
+	
 --Magazine Three
-INSERT INTO magazine(issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price, email, registered_on_payment_hub) VALUES (35830293, true, 'Magazine Three', 'READERS', 4, 10, 'magazine-three@upp.com', true);
+INSERT INTO magazine(issn, active, name, payment_type, editor_in_chief_id, monthly_membership_price, email, registered_on_payment_hub, paper_price, issue_price) VALUES (35830293, true, 'Magazine Three', 'READERS', 4, 10, 'magazine-three@upp.com', true, 4, 2);
 
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (3, 2);
 INSERT INTO magazine_scientific_areas(magazine_id, scientific_areas_id) VALUES (3, 3);
@@ -125,8 +162,23 @@ INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (3, 7);
 INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (3, 8);
 INSERT INTO magazine_reviewers(magazine_id, reviewers_id) VALUES (3, 6);
 
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (4, 4, false, '2020-03-07 13:56:58', 3);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (1, 4, true, '2019-02-07 13:56:58', 3);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (2, 4, true, '2019-03-07 13:56:58', 3);
+INSERT INTO issue(number, price, published, publishing_date, magazine_id) VALUES (3, 4, true, '2019-04-07 13:56:58', 3);
+
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('9845839', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 1', 10, 10);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('4739204', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 2', 10, 10);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('2749302', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 1', 10, 11);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('4730385', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 2', 10, 11);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('5840340', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 1', 10, 12);
+INSERT INTO paper(doi, active, keywords, paper_abstract, pdf, price, title, author_id, issue_id)
+	VALUES ('2584932', true, 'something; something', 'bla bla', 'path', 2, 'Paper Title 2', 10, 12);
+	
 --INSERT INTO membership(valid_until, magazine_id, user_id) VALUES ('2020-05-07 13:56:58', 1002, 1009);
 
-INSERT INTO issue(number, published, publishing_date, magazine_id) VALUES (1, false, '2020-03-07 13:56:58', 1);
-INSERT INTO issue(number, published, publishing_date, magazine_id) VALUES (1, false, '2020-03-07 13:56:58', 2);
-INSERT INTO issue(number, published, publishing_date, magazine_id) VALUES (1, false, '2020-03-07 13:56:58', 3);

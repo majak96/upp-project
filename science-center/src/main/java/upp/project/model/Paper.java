@@ -20,6 +20,9 @@ public class Paper {
 	@Column
 	private String title;
 	
+	@Column
+	private Double price;
+	
 	@ManyToOne
 	private RegisteredUser author;
 	
@@ -145,6 +148,14 @@ public class Paper {
 
 	public void setDOI(String dOI) {
 		DOI = dOI;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 
 }

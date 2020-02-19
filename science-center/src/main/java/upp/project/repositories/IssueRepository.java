@@ -1,5 +1,7 @@
 package upp.project.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -13,4 +15,6 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, JpaSpecific
 	Issue findIssueByNumberInMagazine(Magazine magazine, Integer number);*/
 	
 	Issue findByPublishedAndMagazine(Boolean published, Magazine magazine);
+	
+	List<Issue> findByMagazineAndPublished(Magazine magazine, Boolean published);
 }

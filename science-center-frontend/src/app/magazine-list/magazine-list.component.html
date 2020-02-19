@@ -11,9 +11,9 @@
             <div class="card border-secondary mb-3">
               <div class="card-header">
                 <h4>
-                  <span>{{magazine.name}}</span>
+                  <a [routerLink]="['/magazine', magazine.id]">{{magazine.name}}</a>
                   <span style="float: right">
-                    <a><i class="fas fa-cash-register"></i></a> <a class="ml-3"><i class="fab fa-paypal"></i></a>
+                    <a><i class="fas fa-shopping-cart"></i></a> <a type="button" (click)="subscribe(magazine)" class="ml-3"><i class="fab fa-paypal"></i></a>
                   </span>
                 </h4>
               </div>

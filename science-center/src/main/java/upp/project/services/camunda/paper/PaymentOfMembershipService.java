@@ -46,7 +46,7 @@ public class PaymentOfMembershipService implements JavaDelegate {
 		if(magazine != null) {
 			
 			OrderInformationDTO order = new OrderInformationDTO(magazine.getEmail(), magazine.getMonthlyMembershipPrice(), "USD", 
-							successUrl, "https://localhost:9997/order/error", "https://localhost:9997/order/fail");	
+							successUrl, "https://localhost:9997/order/error", "https://localhost:9997/order/fail", magazine.getId());	
 			
 			HttpEntity<OrderInformationDTO> request = new HttpEntity<>(order);
 			

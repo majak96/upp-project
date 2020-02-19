@@ -8,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 public class Issue {
@@ -20,6 +18,9 @@ public class Issue {
 	
 	@Column
 	private Integer number;
+	
+	@Column
+	private Double price;
 	
 	@Column
 	private Boolean published;
@@ -39,6 +40,7 @@ public class Issue {
 		this.published = false;
 		this.number = number;
 		this.publishingDate = publishingDate;
+		this.price = magazine.getIssuePrice();
 	}
 
 	public Long getId() {
@@ -79,6 +81,14 @@ public class Issue {
 
 	public void setPublishingDate(Date publishingDate) {
 		this.publishingDate = publishingDate;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 	
 }

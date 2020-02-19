@@ -22,6 +22,9 @@ import { NewPaperComponent } from './new-paper/new-paper.component';
 import { SuccessPageComponent } from './success-page/success-page.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { FailPageComponent } from './fail-page/fail-page.component';
+import { IssueListComponent } from './issue-list/issue-list.component';
+import { PaperListComponent } from './paper-list/paper-list.component';
+import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +46,9 @@ import { FailPageComponent } from './fail-page/fail-page.component';
     SuccessPageComponent,
     ErrorPageComponent,
     FailPageComponent,
+    IssueListComponent,
+    PaperListComponent,
+    ShoppingCartComponent,
   ],
   imports: [
     BrowserModule,

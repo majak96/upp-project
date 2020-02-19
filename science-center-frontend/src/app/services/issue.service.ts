@@ -5,14 +5,14 @@ import { Observable } from 'rxjs';
 import { Form } from '../model/form';
 import { Value } from '../model/value';
 import { SubmitResponse } from '../model/submitresponse';
-import { Paper } from '../model/paper';
+import { Issue } from '../model/issue';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PaperService {
+export class IssueService {
 
-  baseUrl = 'https://localhost:9997/paper/';
+  baseUrl = 'https://localhost:9997/issue/';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' })
@@ -20,14 +20,8 @@ export class PaperService {
 
   constructor(private http: HttpClient) { }
 
-  startNewPaperProcess(): Observable<Form> {
+  getMagazineIssues(magazineId: number): Observable<Issue[]> {
 
-    return this.http.get<Form>(this.baseUrl + 'form/', this.httpOptions);
+    return this.http.get<Issue[]>(this.baseUrl + 'magazine/' + magazineId, this.httpOptions);
   }
-
-  getIssuePapers(issueId: number): Observable<Paper[]> {
-
-    return this.http.get<Paper[]>(this.baseUrl + 'issue/' + issueId, this.httpOptions);
-  }
-
 }

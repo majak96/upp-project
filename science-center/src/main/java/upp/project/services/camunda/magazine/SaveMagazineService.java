@@ -54,7 +54,7 @@ public class SaveMagazineService implements JavaDelegate {
 		}
 		
 		//create the magazine
-		Magazine magazine = new Magazine((String)valuesMap.get("form_name"), (String)valuesMap.get("form_issn"), (Integer)valuesMap.get("form_price"));
+		Magazine magazine = new Magazine((String)valuesMap.get("form_name"), (String)valuesMap.get("form_issn"), (String)valuesMap.get("form_email"));
 		
 		//set payment type
 		if(valuesMap.get("form_payment").equals("authors")) {

@@ -77,6 +77,7 @@ public class MagazineController {
 		if(magazine != null ) {
 			//set registration flag
 			magazine.setRegisteredOnPaymentHub(true);
+			magazineService.save(magazine);
 			
 			runtimeService.createMessageCorrelation("PaymentHubRegistration").processInstanceId(processInstanceId).correlateWithResult();
 			

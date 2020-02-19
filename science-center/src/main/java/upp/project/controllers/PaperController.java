@@ -1,19 +1,26 @@
 package upp.project.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import upp.project.dtos.FormDTO;
 import upp.project.dtos.FormFieldDTO;
+import upp.project.dtos.PaperDTO;
+import upp.project.model.Issue;
+import upp.project.model.Paper;
+import upp.project.services.IssueService;
 import upp.project.services.PaperService;
 import upp.project.services.ProcessService;
 
@@ -27,6 +34,9 @@ public class PaperController {
 	
 	@Autowired
 	TaskService taskService;
+	
+	@Autowired
+	IssueService issueService;
 	
 	@Autowired
 	PaperService paperService;
@@ -45,6 +55,25 @@ public class PaperController {
 		FormDTO form = new FormDTO(firstTask.getId(), firstTask.getProcessInstanceId(), firstTask.getName(), frontendFields);
 		
 		return ResponseEntity.ok(form);
+	}
+	
+	@GetMapping("issue/{issueId}")
+	public ResponseEntity<?> getIssuePapers(@PathVariable Long issueId) {
+		
+		//check if issue exists
+		Issue issue = issueService.findById(issueId);
+		if(issue == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+		
+		List<Paper> paperList = paperService.findByIssue(issue);
+		
+		List<PaperDTO> dtos = new ArrayList<PaperDTO>();
+		for(Paper paper : paperList) {
+			dtos.add(new PaperDTO(paper));
+		}
+				
+		return ResponseEntity.ok(dtos);
 	}
 
 }

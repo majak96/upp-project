@@ -1,0 +1,29 @@
+<div style="margin-top: 100px; margin-bottom: 10px;" class="container">
+  <div class="container mt-4">
+    <h2 class="title">Shopping cart</h2>
+    <hr class="my-4">
+  </div>
+  <div class="row">
+    <table class="table table-striped">
+      <thead>
+          <tr>
+              <th scope="col"></th>
+              <th scope="col">Name</th>
+              <th scope="col">Price</th>
+              <th scope="col"></th>
+          </tr>
+      </thead>
+      <tbody>
+        <tr class="col-4 mb-2" *ngFor="let item of items; let i = index" >
+            <td>{{i + 1}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.price}} USD</td>
+            <td><button (click)="removeItem(item.id)"  class="btn btn-link" style="color: black;"><i class="far fa-times-circle fa-lg"></i></button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row mt-5">
+    <button [disabled]="items.length == 0" class="btn btn-block btn-dark ml-5 mr-5"> Create order <i class="fas fa-shopping-cart ml-2 fa-lg"></i></button>
+  </div>
+</div>

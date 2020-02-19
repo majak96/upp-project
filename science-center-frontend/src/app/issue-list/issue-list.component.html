@@ -1,0 +1,30 @@
+<div style="margin-top: 100px; margin-bottom: 10px;" class="container">
+  <div class="row">
+    <div class="col-12 m-auto">
+      <div class="reg-title">
+        <h2>Issues</h2>
+        <hr>
+        <h4 *ngIf="issueList.length===0">There are no issues available at the moment.</h4>
+
+        <div *ngIf="issueList.length!==0" class="row">
+          <div class="col-4" *ngFor="let issue of issueList" >
+            <div class="card border-secondary mb-3">
+              <div class="card-header">
+                <h4>
+                  <a [routerLink]="['/issue', issue.id]">Number {{issue.number}}</a>
+                  <span style="float: right">
+                    <a type="button" (click)="addToCart(issue)"><i class="fas fa-shopping-cart"></i></a>
+                  </span>
+                </h4>
+              </div>
+              <div class="card-body">
+                Price: {{issue.price}} $
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

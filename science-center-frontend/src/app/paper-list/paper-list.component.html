@@ -1,0 +1,31 @@
+<div style="margin-top: 100px; margin-bottom: 10px;" class="container">
+  <div class="row">
+    <div class="col-12 m-auto">
+      <div class="reg-title">
+        <h2>Papers</h2>
+        <hr>
+        <h4 *ngIf="paperList.length===0">There are no papers available at the moment.</h4>
+
+        <div *ngIf="paperList.length!==0" class="row">
+          <div class="col-4" *ngFor="let paper of paperList" >
+            <div class="card border-secondary mb-3">
+              <div class="card-header">
+                <h4>
+                  <span>{{paper.title}}</span>
+                  <span style="float: right">
+                    <a type="button" (click)="addToCart(paper)"><i class="fas fa-shopping-cart"></i></a>
+                  </span>
+                </h4>
+              </div>
+              <div class="card-body">
+                Author: {{paper.author}} <br>
+                Price: {{paper.price}} $
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

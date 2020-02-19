@@ -8,6 +8,9 @@
       <li class="nav-item active">
         <a class="nav-link" href="">Home</a>
       </li>
+      <li *ngIf="role==='ROLE_USER'" class="nav-item active">
+        <a class="nav-link" [routerLink]="['/shopping-cart']">Shopping cart</a>
+      </li>
       <li *ngIf="isLoggedIn" class="nav-item active">
         <a class="nav-link" [routerLink]="['/tasks']">Tasks</a>
       </li>

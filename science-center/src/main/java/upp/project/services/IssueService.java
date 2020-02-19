@@ -1,5 +1,7 @@
 package upp.project.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +25,19 @@ public class IssueService {
 		return issueRepository.save(issue);
 	}
 	
+	public Issue findById(Long id) {
+		
+		return issueRepository.getOne(id);
+	}
+	
 	public Issue findUnpublishedIssueInMagazine(Magazine magazine) {
 		
 		return issueRepository.findByPublishedAndMagazine(false, magazine);
+	}
+	
+	public List<Issue> findByMagazine(Magazine magazine){
+		
+		return issueRepository.findByMagazineAndPublished(magazine, true);
 	}
 
 }

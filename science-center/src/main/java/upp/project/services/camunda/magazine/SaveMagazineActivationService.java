@@ -28,14 +28,19 @@ public class SaveMagazineActivationService implements JavaDelegate{
 		System.out.println("MAG | activating the magazine");
 		
 		Long magazineId = (Long) execution.getVariable("magazineId");
-		String magazineEmail = (String) execution.getVariable("form_email");
+		Long magazinePrice = (Long) execution.getVariable("form_magazine_price");
+		Long issuePrice = (Long) execution.getVariable("form_issue_price");
+		Long paperPrice = (Long) execution.getVariable("form_paper_price");
 		
 		Magazine magazine = magazineService.findById(magazineId);
 		
 		if(magazine != null) {
 			//activate the magazine
 			magazine.setActive(true);
-			magazine.setEmail(magazineEmail);
+			magazine.setMonthlyMembershipPrice(Double.valueOf(magazinePrice));
+			magazine.setIssuePrice(Double.valueOf(issuePrice));
+			magazine.setPaperPrice(Double.valueOf(paperPrice));
+			
 			magazineService.save(magazine);
 			
 			//create the first issue after activation

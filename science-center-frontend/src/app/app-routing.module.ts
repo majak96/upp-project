@@ -1,3 +1,6 @@
+import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
+import { PaperListComponent } from './paper-list/paper-list.component';
+import { IssueListComponent } from './issue-list/issue-list.component';
 import { MagazineListComponent } from './magazine-list/magazine-list.component';
 import { TaskComponent } from './task/task.component';
 import { AuthGuardService } from './authentication/auth-guard.service';
@@ -70,10 +73,25 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
+    path: 'magazine/:id',
+    component: IssueListComponent,
+    canActivate: [AuthGuardService]
+  },
+  {
+    path: 'issue/:id',
+    component: PaperListComponent,
+    canActivate: [AuthGuardService]
+  },
+  {
     path: 'magazine/new',
     component: NewMagazineComponent,
     canActivate: [RoleGuardService],
     data: {role: 'ROLE_EDITOR'}
+  },
+  {
+    path: 'shopping-cart',
+    component: ShoppingCartComponent,
+    canActivate: [AuthGuardService]
   },
   {
     path: 'emailconfirmation',

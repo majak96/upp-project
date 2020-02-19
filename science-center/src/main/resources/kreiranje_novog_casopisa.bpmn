@@ -32,9 +32,9 @@
               <camunda:property id="min" value="1" />
             </camunda:properties>
           </camunda:formField>
-          <camunda:formField id="form_price" label="Monthly membership price" type="long">
+          <camunda:formField id="form_email" label="Email address" type="string">
             <camunda:properties>
-              <camunda:property id="min" value="0" />
+              <camunda:property id="email" value="true" />
             </camunda:properties>
             <camunda:validation>
               <camunda:constraint name="required" />
@@ -227,12 +227,28 @@
       <bpmn:outgoing>SequenceFlow_15ppip8</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_0t7cya3" sourceRef="Task_0dks3w4" targetRef="ServiceTask_0t2x4in" />
-    <bpmn:userTask id="Task_0dks3w4" name="Email input" camunda:assignee="${process_initiator}">
+    <bpmn:userTask id="Task_0dks3w4" name="Magazine prices input" camunda:assignee="${process_initiator}">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="form_email" label="Email " type="string">
+          <camunda:formField id="form_magazine_price" label="Magazine price " type="long">
             <camunda:properties>
-              <camunda:property id="email" value="true" />
+              <camunda:property id="min" value="0" />
+            </camunda:properties>
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="form_issue_price" label="Issue price" type="long">
+            <camunda:properties>
+              <camunda:property id="min" value="0" />
+            </camunda:properties>
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="form_paper_price" label="Paper price" type="long">
+            <camunda:properties>
+              <camunda:property id="min" value="0" />
             </camunda:properties>
             <camunda:validation>
               <camunda:constraint name="required" />
