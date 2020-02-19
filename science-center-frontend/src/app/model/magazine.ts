@@ -3,4 +3,5 @@ export interface Magazine {
   name: string;
   issn: string;
   scientificAreas: any;
+  monthlyMembershipPrice: number;
 }

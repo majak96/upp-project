@@ -38,6 +38,7 @@ export class ShoppingCartService {
     } else {
       if (item.type !== this.getType()) {
         this.shoppingItems = [];
+        console.log('ovde')
       } else {
         this.shoppingItems = JSON.parse(shoppingCart);
         console.log(this.shoppingItems);
@@ -52,31 +53,8 @@ export class ShoppingCartService {
 
     this.shoppingItems.push(item);
     this.saveCart();
-    return true;
-  }
 
-  addIssueToShoppingCart(item: ShoppingItem) {
-    const shoppingCart = this.getShoppingCart();
-    if (shoppingCart == null) {
-      this.shoppingItems = [];
-      this.saveType(item.type);
-    } else {
-      if (item.type !== this.getType()) {
-        this.shoppingItems = [];
-      } else {
-        this.shoppingItems = JSON.parse(shoppingCart);
-        console.log(this.shoppingItems);
-      }
-    }
-    console.log(item);
-    const oldItem = this.shoppingItems.filter(i => i.id === item.id );
-    console.log(oldItem);
-    if (oldItem.length > 0 ) {
-      return false;
-    }
-
-    this.shoppingItems.push(item);
-    this.saveCart();
+    alert('Successfully added to shopping cart!')
     return true;
   }
 
@@ -106,14 +84,17 @@ export class ShoppingCartService {
     this.shoppingItems = this.shoppingItems.filter(item => item.id !== id );
 
     if (this.shoppingItems.length === 0) {
-      window.sessionStorage.removeItem(SHOPPING_ITEMS_TYPE);
-      window.sessionStorage.removeItem(SHOPPING_ITEMS);
+      this.emptyShoppingCart();
     } else {
       this.saveCart();
     }
     return true;
   }
 
+  public emptyShoppingCart() {
+    window.sessionStorage.removeItem(SHOPPING_ITEMS_TYPE);
+    window.sessionStorage.removeItem(SHOPPING_ITEMS);
+  }
 
 
 }

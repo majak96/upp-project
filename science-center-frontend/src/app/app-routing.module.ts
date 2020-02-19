@@ -1,3 +1,4 @@
+import { PurchasedItemsComponent } from './purchased-items/purchased-items.component';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { PaperListComponent } from './paper-list/paper-list.component';
 import { IssueListComponent } from './issue-list/issue-list.component';
@@ -83,10 +84,16 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
-    path: 'magazine/new',
+    path: 'magazinenew',
     component: NewMagazineComponent,
     canActivate: [RoleGuardService],
     data: {role: 'ROLE_EDITOR'}
+  },
+  {
+    path: 'purchased-items',
+    component: PurchasedItemsComponent,
+    canActivate: [RoleGuardService],
+    data: {role: 'ROLE_USER'}
   },
   {
     path: 'shopping-cart',

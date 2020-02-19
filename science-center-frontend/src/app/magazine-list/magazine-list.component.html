@@ -13,7 +13,7 @@
                 <h4>
                   <a [routerLink]="['/magazine', magazine.id]">{{magazine.name}}</a>
                   <span style="float: right">
-                    <a><i class="fas fa-shopping-cart"></i></a> <a type="button" (click)="subscribe(magazine)" class="ml-3"><i class="fab fa-paypal"></i></a>
+                    <a type="button" (click)="addToCart(magazine)"><i class="fas fa-shopping-cart"></i></a> <a type="button" (click)="subscribe(magazine)" class="ml-3"><i class="fab fa-paypal"></i></a>
                   </span>
                 </h4>
               </div>

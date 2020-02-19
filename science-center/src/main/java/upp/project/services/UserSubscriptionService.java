@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import upp.project.dtos.OrderStatusInformationDTO;
 import upp.project.model.OrderStatus;
+import upp.project.model.RegisteredUser;
 import upp.project.model.UserSubscription;
 import upp.project.repositories.UserSubscriptionRepository;
 
@@ -43,6 +44,10 @@ public class UserSubscriptionService {
 		
 		return userSubscriptionRepository.findBySubscriptionStatusIn(statusList);
 	}
+	
+	public List<UserSubscription> getAllUserSubscriptions(RegisteredUser user){
+	    return this.userSubscriptionRepository.findByUser(user);
+	  }
 	
 	@Scheduled(initialDelay = 10000, fixedRate = 180000)
 	public void checkSubscriptionStatus() {

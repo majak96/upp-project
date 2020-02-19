@@ -25,6 +25,9 @@ import { FailPageComponent } from './fail-page/fail-page.component';
 import { IssueListComponent } from './issue-list/issue-list.component';
 import { PaperListComponent } from './paper-list/paper-list.component';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PurchasedItemsComponent } from './purchased-items/purchased-items.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -49,12 +52,15 @@ import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
     IssueListComponent,
     PaperListComponent,
     ShoppingCartComponent,
+    PurchasedItemsComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
+    MatTabsModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     {
